@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>محاكي VEXcode VR التعليمي المتكامل (لبنات + كود) — بدون إنترنت</title>
+<style>
+:root {
+  --bg-dark: #0f172a;
+  --panel-bg: #1e293b;
+  --line-color: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #38bdf8;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --accent-purple: #a855f7;
+  --drivetrain-color: #2563eb;
+  --pen-color: #059669;
+  --control-color: #d97706;
+  --sensing-color: #0284c7;
+  --magnet-color: #7c3aed;
+  --looks-color: #9333ea;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header */
+header {
+  background: linear-gradient(90deg, #1e1b4b 0%, #0f172a 100%);
+  border-bottom: 2px solid #312e81;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-title { display: flex; align-items: center; gap: 10px; }
+.brand-badge {
+  background: #dc2626;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.brand-title h1 { font-size: 17px; font-weight: 700; color: #fff; }
+.brand-title span {
+  font-size: 11px;
+  color: var(--accent-green);
+  background: rgba(34, 197, 94, 0.15);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Mode Switch Tabs */
+.mode-switch {
+  display: flex;
+  background: #0b1120;
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 4px;
+}
+.mode-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mode-btn.active {
+  background: var(--primary);
+  color: #0b1120;
+  font-weight: 700;
+}
+
+/* Toolbar */
+.toolbar {
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--line-color);
+  padding: 8px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.btn-run { background: #16a34a; color: #fff; }
+.btn-run:hover { background: #15803d; }
+.btn-stop { background: var(--accent-red); color: #fff; }
+.btn-stop:hover { background: #b91c1c; }
+.btn-reset { background: #475569; color: #fff; }
+.btn-reset:hover { background: #334155; }
+.btn-clear { background: transparent; color: var(--text-muted); border: 1px solid var(--line-color); }
+.btn-clear:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+select {
+  background: #0f172a;
+  color: var(--text-main);
+  border: 1px solid var(--line-color);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+}
+.speed-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.speed-wrapper input[type="range"] {
+  accent-color: var(--primary);
+  width: 75px;
+  cursor: pointer;
+}
+
+/* Main Container */
+.workspace-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left: Toolbox for Blocks */
+.toolbox-panel {
+  width: 250px;
+  background: #0b1120;
+  border-left: 1px solid var(--line-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.toolbox-header {
+  padding: 8px 12px;
+  background: #131d31;
+  border-bottom: 1px solid var(--line-color);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+}
+.category-filter {
+  display: flex;
+  overflow-x: auto;
+  background: #0f172a;
+  border-bottom: 1px solid var(--line-color);
+  padding: 4px;
+  gap: 4px;
+}
+.cat-btn {
+  font-size: 11px;
+  padding: 4px 7px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background: #1e293b;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.cat-btn.active {
+  background: var(--primary);
+  color: #000;
+  font-weight: bold;
+}
+.blocks-palette {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Middle: Visual Workspace Dropzone & Text Editor */
+.editor-middle-panel {
+  flex: 1.15;
+  background: #111827;
+  border-left: 1px solid var(--line-color);
+  display: flex;
+  flex-direction: column;
+  min-width: 330px;
+  position: relative;
+}
+.workspace-header {
+  padding: 8px 12px;
+  background: #172033;
+  border-bottom: 1px solid var(--line-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.workspace-dropzone {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.start-block {
+  background: #15803d;
+  color: white;
+  padding: 9px 14px;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+  font-size: 13.5px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  border: 2px solid #22c55e;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+}
+
+/* Block Cards */
+.block-card {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+  cursor: grab;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.18);
+  transition: transform 0.15s ease;
+}
+.block-card:hover { transform: translateY(-1px); }
+.block-card.dragging { opacity: 0.5; }
+
+.cat-drivetrain { background: #2563eb; }
+.cat-pen { background: #059669; }
+.cat-control { background: #d97706; }
+.cat-sensing { background: #0284c7; }
+.cat-magnet { background: #7c3aed; }
+.cat-looks { background: #9333ea; }
+
+.block-field {
+  background: #ffffff;
+  color: #0f172a;
+  border: none;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 6px;
+  outline: none;
+  text-align: center;
+}
+.block-field-num { width: 50px; }
+.block-field-select { cursor: pointer; }
+
+.placed-block {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.placed-block .block-card { cursor: move; }
+.btn-del-block {
+  background: #334155;
+  color: #f87171;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.btn-del-block:hover { background: #ef4444; color: #fff; }
+
+.drop-placeholder {
+  height: 36px;
+  border: 2px dashed #38bdf8;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  margin: 4px 0;
+}
+.block-active-exec {
+  outline: 3px solid #facc15 !important;
+  box-shadow: 0 0 15px #facc15 !important;
+}
+
+/* Python Text Editor View (Optional Toggle) */
+.python-editor-view {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+}
+.py-editor-wrapper {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  background: #080d19;
+}
+.line-numbers {
+  width: 40px;
+  padding: 10px 6px;
+  background: #050811;
+  color: #475569;
+  text-align: right;
+  font-family: Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  user-select: none;
+  overflow: hidden;
+  border-right: 1px solid #1e293b;
+}
+#codeEditor {
+  flex: 1;
+  background: transparent;
+  color: #f1f5f9;
+  border: none;
+  outline: none;
+  padding: 10px;
+  font-family: Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  resize: none;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+  direction: ltr;
+  text-align: left;
+}
+
+/* Console Drawer */
+.console-drawer {
+  height: 125px;
+  background: #060a14;
+  border-top: 1px solid var(--line-color);
+  padding: 8px 12px;
+  overflow-y: auto;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #93c5fd;
+  direction: ltr;
+  text-align: left;
+}
+.log-err { color: #f87171 !important; }
+.log-info { color: #34d399 !important; }
+.log-warn { color: #fbbf24 !important; }
+
+/* Right: Simulator Arena & HUD */
+.sim-panel {
+  flex: 1.25;
+  display: flex;
+  flex-direction: column;
+  background: #111827;
+  position: relative;
+}
+.hud-bar {
+  background: #1f2937;
+  border-bottom: 1px solid var(--line-color);
+  padding: 7px 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  gap: 6px;
+  font-size: 11px;
+}
+.hud-item {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hud-label { color: var(--text-muted); font-size: 9.5px; }
+.hud-val { font-family: Consolas, monospace; font-weight: 700; color: #38bdf8; font-size: 11.5px; }
+
+.canvas-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+}
+#vrCanvas {
+  background: #f8fafc;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+.status-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid #334155;
+  color: #fff;
+  z-index: 10;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.dot.running { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.dot.stopped { background: #ef4444; }
+
+/* Camera / View Controls overlay on Canvas */
+.view-overlay-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+.btn-icon {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--line-color);
+  color: #f1f5f9;
+  padding: 5px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.btn-icon:hover { background: #38bdf8; color: #000; }
+
+@media (max-width: 1050px) {
+  .workspace-container { flex-direction: column-reverse; overflow-y: auto; }
+  .toolbox-panel { width: 100%; height: 210px; }
+  .sim-panel { min-height: 480px; }
+  body { overflow: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="brand-title">
+    <div class="brand-badge">VEX VR</div>
+    <h1>محاكي VEXcode VR التعليمي المتكامل</h1>
+    <span>بدون إنترنت ⚡</span>
+  </div>
+
+  <!-- Switch between Blocks & Python mode -->
+  <div class="mode-switch">
+    <button id="btnModeBlocks" class="mode-btn active" onclick="switchMode('blocks')">🧩 اللبنات (Blocks)</button>
+    <button id="btnModePython" class="mode-btn" onclick="switchMode('python')">🐍 بايثون (Python)</button>
+  </div>
+
+  <div>
+    <button class="btn btn-clear" onclick="exportBlocksOrCode()">💾 تصدير</button>
+    <button class="btn btn-clear" onclick="openHelpDialog()">📖 مساعدة</button>
+  </div>
+</header>
+
+<!-- Main Toolbar -->
+<div class="toolbar">
+  <button id="btnRun" class="btn btn-run" onclick="startExecution()">
+    ▶ تشغيل
+  </button>
+  <button id="btnStop" class="btn btn-stop" onclick="stopExecution()" disabled>
+    ⏹ إيقاف
+  </button>
+  <button class="btn btn-reset" onclick="resetPlayground()">
+    🔄 إعادة تعيين الساحة
+  </button>
+  <button id="btnClear" class="btn btn-clear" onclick="clearActiveWorkspace()">
+    🗑 مسح
+  </button>
+
+  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted)">
+    <label>الساحة:</label>
+    <select id="playgroundSelect" onchange="changePlayground(this.value)">
+      <option value="grid">ساحة الرسم الشبكية (Grid Map)</option>
+      <option value="art">لوحة الرسم الفنية (Art Canvas)</option>
+      <option value="disk">ملعب الأقراص والالتقاط (Disk Transport)</option>
+      <option value="maze">متاهة الجدران (Wall Maze)</option>
+    </select>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted)">
+    <label>أمثلة جاهزة:</label>
+    <select id="exampleSelect" onchange="loadPresetExample(this.value)">
+      <option value="">-- اختر تطبيقاً تعليمياً --</option>
+      <option value="square">1. رسم مربع ملون (حلقة تكرار)</option>
+      <option value="polygon">2. رسم نجمة ومضلع هندسي</option>
+      <option value="avoid_distance">3. مستشعر المسافة والتوقف الذكي</option>
+      <option value="bumper_bounce">4. مستشعر الصدام والارتداد</option>
+      <option value="pickup_disk">5. المغناطيس ونقل الأقراص</option>
+      <option value="maze_navigation">6. حل المتاهة بالمحاذاة</option>
+    </select>
+  </div>
+
+  <div class="speed-wrapper">
+    <span>السرعة:</span>
+    <input type="range" id="simSpeed" min="1" max="10" value="5">
+    <span id="speedVal">5x</span>
+  </div>
+</div>
+
+<!-- Main Workspace Container -->
+<div class="workspace-container">
+
+  <!-- 1. Left Toolbox (Visible in Blocks Mode) -->
+  <div class="toolbox-panel" id="toolboxPanel">
+    <div class="toolbox-header">
+      <span>مكتبة اللبنات البرمجية</span>
+    </div>
+    
+    <div class="category-filter">
+      <button class="cat-btn active" onclick="filterBlocks('all', this)">الكل</button>
+      <button class="cat-btn" onclick="filterBlocks('drivetrain', this)">الحركة</button>
+      <button class="cat-btn" onclick="filterBlocks('pen', this)">القلم</button>
+      <button class="cat-btn" onclick="filterBlocks('control', this)">التحكم</button>
+      <button class="cat-btn" onclick="filterBlocks('sensing', this)">الحساسات</button>
+      <button class="cat-btn" onclick="filterBlocks('magnet', this)">المغناطيس</button>
+      <button class="cat-btn" onclick="filterBlocks('looks', this)">وحدة التحكم / المخرجات</button>
+    </div>
+
+    <div class="blocks-palette" id="blocksPalette">
+      <!-- Drivetrain -->
+      <div class="block-card cat-drivetrain" draggable="true" data-type="drive_for">
+        <span>تحرك</span>
+        <select class="block-field block-field-select" data-field="dir">
+          <option value="FORWARD">للأمام</option>
+          <option value="REVERSE">للخلف</option>
+        </select>
+        <span>مسافة</span>
+        <input type="number" class="block-field block-field-num" value="200" data-field="dist">
+        <span>ملم</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="turn_for">
+        <span>استدر</span>
+        <select class="block-field block-field-select" data-field="dir">
+          <option value="RIGHT">لليمين</option>
+          <option value="LEFT">لليسار</option>
+        </select>
+        <span>بزاوية</span>
+        <input type="number" class="block-field block-field-num" value="90" data-field="angle">
+        <span>درجة</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="set_speed">
+        <span>اضبط السرعة إلى</span>
+        <input type="number" class="block-field block-field-num" value="80" data-field="speed">
+        <span>%</span>
+      </div>
+
+      <!-- Pen -->
+      <div class="block-card cat-pen" draggable="true" data-type="pen_move">
+        <span>اجعل القلم</span>
+        <select class="block-field block-field-select" data-field="action">
+          <option value="DOWN">للأسفل (رسم)</option>
+          <option value="UP">للأعلى (رفع)</option>
+        </select>
+      </div>
+
+      <div class="block-card cat-pen" draggable="true" data-type="pen_color">
+        <span>لون القلم:</span>
+        <select class="block-field block-field-select" data-field="color">
+          <option value="#ef4444">الأحمر</option>
+          <option value="#3b82f6">الأزرق</option>
+          <option value="#10b981">الأخضر</option>
+          <option value="#0f172a">الأسود</option>
+        </select>
+      </div>
+
+      <!-- Control -->
+      <div class="block-card cat-control" draggable="true" data-type="repeat_times">
+        <span>كرر</span>
+        <input type="number" class="block-field block-field-num" value="4" data-field="times">
+        <span>مرات: (اللبنات التالية)</span>
+      </div>
+
+      <div class="block-card cat-control" draggable="true" data-type="wait_sec">
+        <span>انتظر</span>
+        <input type="number" class="block-field block-field-num" value="1" data-field="sec">
+        <span>ثانية</span>
+      </div>
+
+      <!-- Sensing -->
+      <div class="block-card cat-sensing" draggable="true" data-type="drive_until_obstacle">
+        <span>تحرك للأمام حتى يقترب الجدار لمسافة</span>
+        <input type="number" class="block-field block-field-num" value="150" data-field="dist">
+        <span>ملم</span>
+      </div>
+
+      <div class="block-card cat-sensing" draggable="true" data-type="drive_until_bumper">
+        <span>تحرك للأمام حتى يلمس الصدام الجدار</span>
+      </div>
+
+      <!-- Magnet -->
+      <div class="block-card cat-magnet" draggable="true" data-type="magnet_action">
+        <span>المغناطيس:</span>
+        <select class="block-field block-field-select" data-field="action">
+          <option value="BOOST">التقاط (BOOST)</option>
+          <option value="DROP">إفلات (DROP)</option>
+        </select>
+      </div>
+
+      <!-- Looks / Print -->
+      <div class="block-card cat-looks" draggable="true" data-type="print_msg">
+        <span>طباعة</span>
+        <input type="text" class="block-field" style="width:130px; text-align:right; direction:rtl;" value="مرحباً بالروبوت!" data-field="msg">
+      </div>
+
+      <div class="block-card cat-looks" draggable="true" data-type="set_cursor_next_row">
+        <span>تعيين المؤشر إلى الصف التالي</span>
+      </div>
+
+      <div class="block-card cat-looks" draggable="true" data-type="clear_console">
+        <span>مسح وحدة التحكم</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Middle Panel: Can toggle between Blocks Dropzone and Python Code Editor -->
+  <div class="editor-middle-panel">
+    
+    <!-- Blocks Dropzone View -->
+    <div id="blocksView" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="workspace-header">
+        <span>مساحة ترتيب اللبنات (اسحب من اليمين وأفلت هنا 👇)</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="font-size:11px; color:#38bdf8" id="blockCount">عدد اللبنات: 0</span>
+          <button class="btn btn-clear" style="padding:2px 8px; font-size:11px;" onclick="convertBlocksToPython()">توليد بايثون ➔</button>
+        </div>
+      </div>
+
+      <div class="workspace-dropzone" id="workspaceDropzone">
+        <div class="start-block">
+          <span>🚩</span>
+          <span>عند بدء التشغيل (When Started)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Python Code View -->
+    <div id="pythonView" class="python-editor-view">
+      <div class="workspace-header">
+        <span>محرر نصوص بايثون المباشر (VEX VR Python API)</span>
+        <span style="font-size:11px; color:#94a3b8">دعم الحلقات والشروط والأوامر</span>
+      </div>
+      <div class="py-editor-wrapper">
+        <div class="line-numbers" id="lineNumbers">1</div>
+        <textarea id="codeEditor" spellcheck="false" placeholder="# اكتب أوامر بايثون هنا..."></textarea>
+      </div>
+    </div>
+
+    <!-- Common Console Drawer -->
+    <div class="console-drawer" id="consoleOutput"></div>
+  </div>
+
+  <!-- 3. Right Panel: 2D Simulation Arena & HUD -->
+  <div class="sim-panel">
+    <div class="hud-bar">
+      <div class="hud-item">
+        <span class="hud-label">الموقع (X, Y) ملم</span>
+        <span class="hud-val" id="hudPos">X: 0, Y: 0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">زاوية الرأس</span>
+        <span class="hud-val" id="hudHeading">0.0°</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">مستشعر المسافة</span>
+        <span class="hud-val" id="hudDistance">250 mm</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">مستشعر الصدم</span>
+        <span class="hud-val" id="hudBumper">OFF</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">المغناطيس</span>
+        <span class="hud-val" id="hudMagnet">OFF</span>
+      </div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <div class="status-pill">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">جاهز للتنفيذ</span>
+      </div>
+      
+      <canvas id="vrCanvas" width="560" height="560"></canvas>
+
+      <div class="view-overlay-controls">
+        <button class="btn-icon" onclick="clearTrailsOnly()" title="مسح خطوط الرسم فقط">🖌 مسح الرسم</button>
+        <button class="btn-icon" onclick="resetRobotPositionOnly()" title="إعادة الروبوت للمركز">🎯 ضبط الموقع</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/**
+ * VEX VR Offline Unified Engine
+ * Bridges Drag-and-Drop Visual Blocks and Python Execution seamlessly.
+ */
+
+const FORWARD = 'FORWARD', REVERSE = 'REVERSE', RIGHT = 'RIGHT', LEFT = 'LEFT';
+const DOWN = 'DOWN', UP = 'UP', BOOST = 'BOOST', DROP = 'DROP';
+const MM = 'MM', INCHES = 'INCHES', DEGREES = 'DEGREES', PERCENT = 'PERCENT', SECONDS = 'SECONDS';
+const RED = '#ef4444', GREEN = '#10b981', BLUE = '#3b82f6', BLACK = '#0f172a';
+
+let CURRENT_MODE = 'blocks'; // 'blocks' or 'python'
+
+const STATE = {
+  arenaSize: 2000,
+  canvasSize: 560,
+  robot: {
+    x: 0,
+    y: 0,
+    angle: 90,
+    driveVelocity: 100,
+    penDown: false,
+    penColor: '#0f172a',
+    penWidth: 4,
+    magnetEnergized: false,
+    pickedDisk: null,
+    bumperPressed: false
+  },
+  playgroundType: 'grid',
+  disks: [],
+  walls: [],
+  lines: [],
+  isRunning: false,
+  abortController: null,
+  speedMultiplier: 5
+};
+
+const canvas = document.getElementById('vrCanvas');
+const ctx = canvas.getContext('2d');
+const workspaceDropzone = document.getElementById('workspaceDropzone');
+const codeEditor = document.getElementById('codeEditor');
+const lineNumbers = document.getElementById('lineNumbers');
+const consoleOutput = document.getElementById('consoleOutput');
+const btnRun = document.getElementById('btnRun');
+const btnStop = document.getElementById('btnStop');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const simSpeedInput = document.getElementById('simSpeed');
+const speedValSpan = document.getElementById('speedVal');
+const blockCountSpan = document.getElementById('blockCount');
+
+// HUD elements
+const hudPos = document.getElementById('hudPos');
+const hudHeading = document.getElementById('hudHeading');
+const hudDistance = document.getElementById('hudDistance');
+const hudBumper = document.getElementById('hudBumper');
+const hudMagnet = document.getElementById('hudMagnet');
+
+simSpeedInput.addEventListener('input', (e) => {
+  STATE.speedMultiplier = parseFloat(e.target.value);
+  speedValSpan.innerText = STATE.speedMultiplier + 'x';
+});
+
+// Sync code editor line numbers
+codeEditor.addEventListener('input', updateCodeLineNumbers);
+codeEditor.addEventListener('scroll', () => { lineNumbers.scrollTop = codeEditor.scrollTop; });
+codeEditor.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = codeEditor.selectionStart, end = codeEditor.selectionEnd;
+    codeEditor.value = codeEditor.value.substring(0, start) + "    " + codeEditor.value.substring(end);
+    codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+    updateCodeLineNumbers();
+  }
+});
+function updateCodeLineNumbers() {
+  const count = codeEditor.value.split('\n').length;
+  lineNumbers.innerHTML = Array.from({ length: count }, (_, i) => i + 1).join('<br>');
+}
+
+function appendConsole(msg, type = 'normal') {
+  const p = document.createElement('div');
+  if (type === 'error') p.className = 'log-err';
+  else if (type === 'info') p.className = 'log-info';
+  else if (type === 'warn') p.className = 'log-warn';
+  p.textContent = msg;
+  consoleOutput.appendChild(p);
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function clearConsole() { consoleOutput.innerHTML = ''; }
+
+function switchMode(mode) {
+  if (STATE.isRunning) stopExecution();
+  CURRENT_MODE = mode;
+
+  const btnBlocks = document.getElementById('btnModeBlocks');
+  const btnPython = document.getElementById('btnModePython');
+  const blocksView = document.getElementById('blocksView');
+  const pythonView = document.getElementById('pythonView');
+  const toolboxPanel = document.getElementById('toolboxPanel');
+
+  if (mode === 'blocks') {
+    btnBlocks.classList.add('active');
+    btnPython.classList.remove('active');
+    blocksView.style.display = 'flex';
+    pythonView.style.display = 'none';
+    toolboxPanel.style.display = 'flex';
+  } else {
+    btnPython.classList.add('active');
+    btnBlocks.classList.remove('active');
+    blocksView.style.display = 'none';
+    pythonView.style.display = 'flex';
+    toolboxPanel.style.display = 'none';
+
+    // If python editor is empty, auto-generate from current blocks
+    if (!codeEditor.value.trim()) {
+      convertBlocksToPython();
+    }
+  }
+}
+
+function convertBlocksToPython() {
+  const blocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
+  if (blocks.length === 0) {
+    appendConsole('لا توجد لبنات برمجية لتحويلها إلى بايثون!', 'warn');
+    return;
+  }
+
+  let code = "# تم توليد كود بايثون تلقائياً من اللبنات البرمجية\n\n";
+  for (let i = 0; i < blocks.length; i++) {
+    const card = blocks[i].querySelector('.block-card');
+    const type = card.dataset.type;
+
+    if (type === 'drive_for') {
+      const dir = card.querySelector('[data-field="dir"]').value;
+      const dist = card.querySelector('[data-field="dist"]').value;
+      code += `drivetrain.drive_for(${dir}, ${dist}, MM)\n`;
+    } else if (type === 'turn_for') {
+      const dir = card.querySelector('[data-field="dir"]').value;
+      const angle = card.querySelector('[data-field="angle"]').value;
+      code += `drivetrain.turn_for(${dir}, ${angle}, DEGREES)\n`;
+    } else if (type === 'set_speed') {
+      const spd = card.querySelector('[data-field="speed"]').value;
+      code += `drivetrain.set_drive_velocity(${spd}, PERCENT)\n`;
+    } else if (type === 'pen_move') {
+      const act = card.querySelector('[data-field="action"]').value;
+      code += `pen.move(${act})\n`;
+    } else if (type === 'pen_color') {
+      const col = card.querySelector('[data-field="color"]').value;
+      const colName = col === '#ef4444' ? 'RED' : col === '#3b82f6' ? 'BLUE' : col === '#10b981' ? 'GREEN' : 'BLACK';
+      code += `pen.set_pen_color(${colName})\n`;
+    } else if (type === 'wait_sec') {
+      const sec = card.querySelector('[data-field="sec"]').value;
+      code += `wait(${sec}, SECONDS)\n`;
+    } else if (type === 'magnet_action') {
+      const act = card.querySelector('[data-field="action"]').value;
+      code += `magnet.energize(${act})\n`;
+    } else if (type === 'drive_until_obstacle') {
+      const dist = card.querySelector('[data-field="dist"]').value;
+      code += `while distance.get_distance(MM) > ${dist}:\n    drivetrain.drive_for(FORWARD, 15, MM)\n`;
+    } else if (type === 'drive_until_bumper') {
+      code += `while not left_bumper.pressing():\n    drivetrain.drive_for(FORWARD, 20, MM)\n`;
+    } else if (type === 'print_msg') {
+      const msg = card.querySelector('[data-field="msg"]').value;
+      code += `print("${msg}")\n`;
+    } else if (type === 'set_cursor_next_row') {
+      code += `print()  # تعيين المؤشر إلى الصف التالي\n`;
+    } else if (type === 'clear_console') {
+      code += `# مسح وحدة التحكم\n`;
+    } else if (type === 'repeat_times') {
+      const times = card.querySelector('[data-field="times"]').value;
+      code += `for count in range(${times}):\n`;
+      // Indent subsequent blocks
+      for (let j = i + 1; j < blocks.length; j++) {
+        const cCard = blocks[j].querySelector('.block-card');
+        const cType = cCard.dataset.type;
+        if (cType === 'drive_for') {
+          code += `    drivetrain.drive_for(${cCard.querySelector('[data-field="dir"]').value}, ${cCard.querySelector('[data-field="dist"]').value}, MM)\n`;
+        } else if (cType === 'turn_for') {
+          code += `    drivetrain.turn_for(${cCard.querySelector('[data-field="dir"]').value}, ${cCard.querySelector('[data-field="angle"]').value}, DEGREES)\n`;
+        }
+      }
+      break;
+    }
+  }
+
+  codeEditor.value = code;
+  updateCodeLineNumbers();
+  appendConsole('تم توليد كود بايثون بنجاح!', 'info');
+  switchMode('python');
+}
+
+function clearActiveWorkspace() {
+  stopExecution();
+  if (CURRENT_MODE === 'blocks') {
+    const placed = workspaceDropzone.querySelectorAll('.placed-block');
+    placed.forEach(b => b.remove());
+    updateBlockCount();
+    appendConsole('تم مسح جميع اللبنات.', 'info');
+  } else {
+    codeEditor.value = '';
+    updateCodeLineNumbers();
+    appendConsole('تم مسح كود بايثون.', 'info');
+  }
+}
+
+function exportBlocksOrCode() {
+  const content = CURRENT_MODE === 'blocks' ? getBlocksJSON() : codeEditor.value;
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = CURRENT_MODE === 'blocks' ? 'vex_blocks_project.json' : 'vex_program.py';
+  a.click();
+}
+
+function getBlocksJSON() {
+  const blocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
+  const data = blocks.map(b => {
+    const card = b.querySelector('.block-card');
+    const fields = {};
+    card.querySelectorAll('[data-field]').forEach(fld => {
+      fields[fld.dataset.field] = fld.value;
+    });
+    return { type: card.dataset.type, fields };
+  });
+  return JSON.stringify(data, null, 2);
+}
+
+function openHelpDialog() {
+  alert(
+    "💡 دليل الاستخدام السريع:\n\n" +
+    "• وضع اللبنات (Blocks): اسحب وأفلت اللبنات ورتبها ثم اضغط تشغيل.\n" +
+    "• وضع بايثون (Python): اكتب أوامر بايثون المباشرة مثل drivetrain.drive_for و pen.move.\n" +
+    "• التحويل التلقائي: يمكنك تحويل ترتيب اللبنات إلى بايثون بضغطة زر (توليد بايثون ➔).\n" +
+    "• يعمل 100% بدون إنترنت داخل أي متصفح."
+  );
+}
+
+/* =========================================================================
+   Drag and Drop Handling
+   ========================================================================= */
+let draggedElement = null;
+let draggedFromPalette = false;
+
+document.querySelectorAll('.blocks-palette .block-card').forEach(card => {
+  card.addEventListener('dragstart', (e) => {
+    draggedElement = card;
+    draggedFromPalette = true;
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', card.dataset.type);
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+    draggedElement = null;
+  });
+});
+
+workspaceDropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  const afterElement = getDragAfterElement(workspaceDropzone, e.clientY);
+  const placeholder = getOrCreatePlaceholder();
+  if (afterElement == null) {
+    workspaceDropzone.appendChild(placeholder);
+  } else {
+    workspaceDropzone.insertBefore(placeholder, afterElement);
+  }
+});
+
+workspaceDropzone.addEventListener('dragleave', (e) => {
+  if (e.target === workspaceDropzone) removePlaceholder();
+});
+
+workspaceDropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const placeholder = document.querySelector('.drop-placeholder');
+
+  if (draggedFromPalette && draggedElement) {
+    const clone = createPlacedBlockElement(draggedElement.dataset.type);
+    if (placeholder) {
+      workspaceDropzone.insertBefore(clone, placeholder);
+    } else {
+      workspaceDropzone.appendChild(clone);
+    }
+  } else if (draggedElement && !draggedFromPalette) {
+    if (placeholder) {
+      workspaceDropzone.insertBefore(draggedElement, placeholder);
+    }
+  }
+
+  removePlaceholder();
+  updateBlockCount();
+});
+
+function getOrCreatePlaceholder() {
+  let ph = document.querySelector('.drop-placeholder');
+  if (!ph) {
+    ph = document.createElement('div');
+    ph.className = 'drop-placeholder';
+  }
+  return ph;
+}
+
+function removePlaceholder() {
+  const ph = document.querySelector('.drop-placeholder');
+  if (ph) ph.remove();
+}
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.placed-block:not(.dragging)')];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function createPlacedBlockElement(type, initialValues = {}) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'placed-block';
+  wrapper.draggable = true;
+
+  const original = document.querySelector(`.blocks-palette .block-card[data-type="${type}"]`);
+  if (!original) return null;
+
+  const cardClone = original.cloneNode(true);
+  for (const [key, val] of Object.entries(initialValues)) {
+    const fld = cardClone.querySelector(`[data-field="${key}"]`);
+    if (fld) fld.value = val;
+  }
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-block';
+  delBtn.innerHTML = '✖';
+  delBtn.title = 'حذف اللبنة';
+  delBtn.onclick = () => { wrapper.remove(); updateBlockCount(); };
+
+  wrapper.appendChild(cardClone);
+  wrapper.appendChild(delBtn);
+
+  wrapper.addEventListener('dragstart', (e) => {
+    draggedElement = wrapper;
+    draggedFromPalette = false;
+    wrapper.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', type);
+  });
+  wrapper.addEventListener('dragend', () => {
+    wrapper.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+
+  return wrapper;
+}
+
+function updateBlockCount() {
+  const count = workspaceDropzone.querySelectorAll('.placed-block').length;
+  blockCountSpan.innerText = `عدد اللبنات: ${count}`;
+}
+
+function filterBlocks(cat, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cards = document.querySelectorAll('.blocks-palette .block-card');
+  cards.forEach(c => {
+    if (cat === 'all' || c.classList.contains(`cat-${cat}`)) {
+      c.style.display = 'inline-flex';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+
+/* =========================================================================
+   Coordinates, Math & Physics
+   ========================================================================= */
+function mmToPx(mm) { return (mm / STATE.arenaSize) * STATE.canvasSize; }
+function toScreenCoord(x, y) {
+  return {
+    x: (x + 1000) / STATE.arenaSize * STATE.canvasSize,
+    y: (1000 - y) / STATE.arenaSize * STATE.canvasSize
+  };
+}
+function normalizeAngle(ang) { ang = ang % 360; return ang < 0 ? ang + 360 : ang; }
+function degToRad(deg) { return deg * Math.PI / 180; }
+
+function initPlayground(type) {
+  STATE.playgroundType = type;
+  STATE.lines = [];
+  STATE.disks = [];
+  STATE.walls = [];
+  STATE.robot.penDown = false;
+  STATE.robot.penColor = '#0f172a';
+  STATE.robot.penWidth = 4;
+  STATE.robot.magnetEnergized = false;
+  STATE.robot.pickedDisk = null;
+  STATE.robot.bumperPressed = false;
+
+  const bound = 960;
+  STATE.walls.push({ x1: -bound, y1: -bound, x2: bound, y2: -bound });
+  STATE.walls.push({ x1: bound, y1: -bound, x2: bound, y2: bound });
+  STATE.walls.push({ x1: bound, y1: -bound, x2: -bound, y2: bound });
+  STATE.walls.push({ x1: -bound, y1: bound, x2: -bound, y2: -bound });
+
+  if (type === 'grid' || type === 'art') {
+    STATE.robot.x = 0;
+    STATE.robot.y = 0;
+    STATE.robot.angle = 90;
+  } else if (type === 'disk') {
+    STATE.robot.x = 0;
+    STATE.robot.y = -700;
+    STATE.robot.angle = 90;
+    STATE.disks = [
+      { id: 1, x: 0, y: 0, radius: 45, color: '#ef4444', name: 'RED' },
+      { id: 2, x: -350, y: 200, radius: 45, color: '#3b82f6', name: 'BLUE' },
+      { id: 3, x: 350, y: 200, radius: 45, color: '#10b981', name: 'GREEN' },
+      { id: 4, x: 0, y: 500, radius: 45, color: '#ef4444', name: 'RED' }
+    ];
+  } else if (type === 'maze') {
+    STATE.robot.x = -800;
+    STATE.robot.y = -800;
+    STATE.robot.angle = 90;
+    const mWalls = [
+      { x1: -600, y1: -1000, x2: -600, y2: -200 },
+      { x1: -600, y1: -200, x2: -200, y2: -200 },
+      { x1: -200, y1: -600, x2: -200, y2: 200 },
+      { x1: -200, y1: 200, x2: 400, y2: 200 },
+      { x1: 200, y1: -600, x2: 600, y2: -600 },
+      { x1: 200, y1: -200, x2: 600, y2: -200 },
+      { x1: -200, y1: 600, x2: 600, y2: 600 },
+      { x1: 600, y1: -600, x2: 600, y2: 200 }
+    ];
+    STATE.walls.push(...mWalls);
+    STATE.disks = [{ id: 99, x: 800, y: 800, radius: 55, color: '#f59e0b', name: 'GOAL' }];
+  }
+
+  updateSensorsHUD();
+  render();
+}
+
+function changePlayground(type) {
+  stopExecution();
+  initPlayground(type);
+  appendConsole(`تم تغيير الساحة إلى: ${type}`, 'info');
+}
+
+function resetPlayground() {
+  stopExecution();
+  initPlayground(STATE.playgroundType);
+  appendConsole('تمت إعادة تعيين الساحة بالكامل.', 'info');
+}
+
+function clearTrailsOnly() {
+  STATE.lines = [];
+  render();
+  appendConsole('تم مسح خطوط الرسم.', 'info');
+}
+
+function resetRobotPositionOnly() {
+  STATE.robot.x = 0;
+  STATE.robot.y = (STATE.playgroundType === 'disk') ? -700 : (STATE.playgroundType === 'maze' ? -800 : 0);
+  STATE.robot.angle = 90;
+  updateSensorsHUD();
+  render();
+  appendConsole('تمت إعادة الروبوت إلى نقطة البداية.', 'info');
+}
+
+/* =========================================================================
+   Renderer
+   ========================================================================= */
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const cw = canvas.width, ch = canvas.height;
+
+  // Background
+  ctx.fillStyle = STATE.playgroundType === 'art' ? '#ffffff' : '#f8fafc';
+  ctx.fillRect(0, 0, cw, ch);
+
+  if (STATE.playgroundType === 'grid' || STATE.playgroundType === 'disk') {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e2e8f0';
+    for (let x = -800; x <= 800; x += 200) {
+      const p1 = toScreenCoord(x, -1000), p2 = toScreenCoord(x, 1000);
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+    for (let y = -800; y <= 800; y += 200) {
+      const p1 = toScreenCoord(-1000, y), p2 = toScreenCoord(1000, y);
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+  }
+
+  // Border Frame
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(4, 4, cw - 8, ch - 8);
+
+  // Pen Trails
+  for (const line of STATE.lines) {
+    const p1 = toScreenCoord(line.x1, line.y1);
+    const p2 = toScreenCoord(line.x2, line.y2);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.strokeStyle = line.color;
+    ctx.lineWidth = mmToPx(line.width * 5);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  // Disks
+  for (const d of STATE.disks) {
+    const sc = toScreenCoord(d.x, d.y);
+    const rad = mmToPx(d.radius);
+    ctx.beginPath();
+    ctx.arc(sc.x, sc.y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#1e293b';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(sc.x, sc.y, rad * 0.45, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+  }
+
+  // Walls
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = mmToPx(35);
+  ctx.lineCap = 'square';
+  for (const w of STATE.walls) {
+    if (Math.abs(w.x1) === 960 && Math.abs(w.x2) === 960) continue;
+    if (Math.abs(w.y1) === 960 && Math.abs(w.y2) === 960) continue;
+    const p1 = toScreenCoord(w.x1, w.y1);
+    const p2 = toScreenCoord(w.x2, w.y2);
+    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+  }
+
+  // Robot Body
+  const sc = toScreenCoord(STATE.robot.x, STATE.robot.y);
+  const rWidth = mmToPx(190), rLength = mmToPx(200);
+
+  ctx.save();
+  ctx.translate(sc.x, sc.y);
+  ctx.rotate(-degToRad(STATE.robot.angle - 90));
+
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath();
+  ctx.roundRect(-rWidth / 2, -rLength / 2, rWidth, rLength, 6);
+  ctx.fill();
+
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(-rWidth / 2 + 5, -rLength / 2 + 10, rWidth - 10, 16);
+
+  ctx.fillStyle = '#090d16';
+  ctx.fillRect(-rWidth / 2 - 4, -rLength / 3, 6, rLength * 0.7);
+  ctx.fillRect(rWidth / 2 - 2, -rLength / 3, 6, rLength * 0.7);
+
+  ctx.fillStyle = STATE.robot.bumperPressed ? '#ef4444' : '#38bdf8';
+  ctx.beginPath();
+  ctx.arc(0, -rLength / 2 + 8, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (STATE.robot.penDown) {
+    ctx.fillStyle = STATE.robot.penColor;
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(0, -rLength / 2 + 2);
+  ctx.lineTo(-6, -rLength / 2 + 16);
+  ctx.lineTo(6, -rLength / 2 + 16);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function updateSensorsHUD() {
+  hudPos.innerText = `X: ${Math.round(STATE.robot.x)}, Y: ${Math.round(STATE.robot.y)}`;
+  hudHeading.innerText = `${normalizeAngle(Math.round(STATE.robot.angle))}°`;
+  const dist = measureForwardDistance();
+  hudDistance.innerText = dist < 2000 ? `${Math.round(dist)} mm` : '> 2000 mm';
+  hudBumper.innerText = STATE.robot.bumperPressed ? '🚨 ON (مضغوط)' : 'OFF (سليم)';
+  hudBumper.style.color = STATE.robot.bumperPressed ? '#ef4444' : '#38bdf8';
+  hudMagnet.innerText = STATE.robot.magnetEnergized ? '⚡ BOOST' : 'OFF';
+  hudMagnet.style.color = STATE.robot.magnetEnergized ? '#f59e0b' : '#38bdf8';
+}
+
+function measureForwardDistance() {
+  const rad = degToRad(STATE.robot.angle);
+  const maxRange = 2500;
+  const rx = STATE.robot.x, ry = STATE.robot.y;
+  const targetX = rx + Math.cos(rad) * maxRange, targetY = ry + Math.sin(rad) * maxRange;
+
+  let minD = maxRange;
+  for (const w of STATE.walls) {
+    const x1 = rx, y1 = ry, x2 = targetX, y2 = targetY;
+    const x3 = w.x1, y3 = w.y1, x4 = w.x2, y4 = w.y2;
+    const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+    if (denom === 0) continue;
+    const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+    const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+    if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
+      const hitX = x1 + ua * (x2 - x1), hitY = y1 + ua * (y2 - y1);
+      const d = Math.hypot(hitX - rx, hitY - ry);
+      if (d < minD) minD = d;
+    }
+  }
+  return Math.max(0, minD - 100);
+}
+
+function checkCollision(nx, ny) {
+  const robotRadius = 95;
+  if (Math.abs(nx) >= 950 - robotRadius || Math.abs(ny) >= 950 - robotRadius) return true;
+  for (const w of STATE.walls) {
+    const px = w.x2 - w.x1, py = w.y2 - w.y1;
+    const l2 = px * px + py * py;
+    let t = ((nx - w.x1) * px + (ny - w.y1) * py) / l2;
+    t = Math.max(0, Math.min(1, t));
+    const closestX = w.x1 + t * px, closestY = w.y1 + t * py;
+    if (Math.hypot(nx - closestX, ny - closestY) < robotRadius) return true;
+  }
+  return false;
+}
+
+function updateMagnetDisks() {
+  if (STATE.robot.magnetEnergized) {
+    if (!STATE.robot.pickedDisk) {
+      for (const d of STATE.disks) {
+        if (Math.hypot(d.x - STATE.robot.x, d.y - STATE.robot.y) < 130) {
+          STATE.robot.pickedDisk = d;
+          appendConsole(`🧲 التقط المغناطيس قرص ${d.name}`, 'info');
+          break;
+        }
+      }
+    }
+    if (STATE.robot.pickedDisk) {
+      const rad = degToRad(STATE.robot.angle);
+      STATE.robot.pickedDisk.x = STATE.robot.x + Math.cos(rad) * 90;
+      STATE.robot.pickedDisk.y = STATE.robot.y + Math.sin(rad) * 90;
+    }
+  } else {
+    STATE.robot.pickedDisk = null;
+  }
+}
+
+/* =========================================================================
+   Execution Controller (Handles Both Blocks & Python)
+   ========================================================================= */
+const sleep = (ms) => new Promise((resolve, reject) => {
+  if (!STATE.isRunning) return reject(new Error('STOPPED'));
+  const timer = setTimeout(resolve, ms / STATE.speedMultiplier);
+  STATE.abortController = () => {
+    clearTimeout(timer);
+    reject(new Error('STOPPED'));
+  };
+});
+
+async function runDriveFor(dir, dist) {
+  const sign = (dir === FORWARD) ? 1 : -1;
+  const totalDist = Math.abs(dist);
+  let traveled = 0;
+  const stepSize = 8;
+
+  while (traveled < totalDist) {
+    if (!STATE.isRunning) break;
+    const step = Math.min(stepSize, totalDist - traveled);
+    const rad = degToRad(STATE.robot.angle);
+    const nx = STATE.robot.x + Math.cos(rad) * step * sign;
+    const ny = STATE.robot.y + Math.sin(rad) * step * sign;
+
+    if (checkCollision(nx, ny)) {
+      STATE.robot.bumperPressed = true;
+      updateSensorsHUD();
+      render();
+      appendConsole('⚠️ تحذير: اصطدام بالجدار! توقف المحرك.', 'warn');
+      break;
+    } else {
+      STATE.robot.bumperPressed = false;
+    }
+
+    if (STATE.robot.penDown) {
+      STATE.lines.push({
+        x1: STATE.robot.x, y1: STATE.robot.y,
+        x2: nx, y2: ny,
+        color: STATE.robot.penColor,
+        width: STATE.robot.penWidth
+      });
+    }
+
+    STATE.robot.x = nx;
+    STATE.robot.y = ny;
+    traveled += step;
+    updateMagnetDisks();
+    updateSensorsHUD();
+    render();
+    await sleep(14);
+  }
+}
+
+async function runTurnFor(dir, angle) {
+  const sign = (dir === RIGHT) ? -1 : 1;
+  const totalAngle = Math.abs(angle);
+  let turned = 0;
+  const stepDeg = 4;
+
+  while (turned < totalAngle) {
+    if (!STATE.isRunning) break;
+    const step = Math.min(stepDeg, totalAngle - turned);
+    STATE.robot.angle = normalizeAngle(STATE.robot.angle + step * sign);
+    turned += step;
+    updateMagnetDisks();
+    updateSensorsHUD();
+    render();
+    await sleep(14);
+  }
+}
+
+// Blocks Execution
+async function executeBlocksMode() {
+  const placedBlocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
+  if (placedBlocks.length === 0) {
+    appendConsole('⚠️ مساحة العمل فارغة! اسحب بعض اللبنات أولاً.', 'warn');
+    return;
+  }
+
+  for (let i = 0; i < placedBlocks.length; i++) {
+    if (!STATE.isRunning) break;
+    const blk = placedBlocks[i];
+    const card = blk.querySelector('.block-card');
+    const type = card.dataset.type;
+
+    if (type === 'repeat_times') {
+      const times = parseInt(card.querySelector('[data-field="times"]').value) || 1;
+      const subBlocks = placedBlocks.slice(i + 1);
+      appendConsole(`🔄 تكرار (${times} مرات)...`, 'info');
+      card.classList.add('block-active-exec');
+
+      for (let r = 0; r < times; r++) {
+        if (!STATE.isRunning) break;
+        for (let s = 0; s < subBlocks.length; s++) {
+          if (!STATE.isRunning) break;
+          await executeSingleBlock(subBlocks[s]);
+        }
+      }
+      card.classList.remove('block-active-exec');
+      break;
+    } else {
+      await executeSingleBlock(blk);
+    }
+  }
+}
+
+async function executeSingleBlock(blockElement) {
+  const card = blockElement.querySelector('.block-card');
+  const type = card.dataset.type;
+  card.classList.add('block-active-exec');
+
+  try {
+    switch (type) {
+      case 'drive_for': {
+        const dir = card.querySelector('[data-field="dir"]').value;
+        const dist = parseFloat(card.querySelector('[data-field="dist"]').value) || 200;
+        appendConsole(`تحرك ${dir === 'FORWARD' ? 'للأمام' : 'للخلف'} ${dist} ملم`);
+        await runDriveFor(dir, dist);
+        break;
+      }
+      case 'turn_for': {
+        const dir = card.querySelector('[data-field="dir"]').value;
+        const angle = parseFloat(card.querySelector('[data-field="angle"]').value) || 90;
+        appendConsole(`استدر ${dir === 'RIGHT' ? 'لليمين' : 'لليسار'} ${angle} درجة`);
+        await runTurnFor(dir, angle);
+        break;
+      }
+      case 'set_speed': {
+        const speed = parseFloat(card.querySelector('[data-field="speed"]').value) || 80;
+        STATE.robot.driveVelocity = speed;
+        appendConsole(`ضبط السرعة: ${speed}%`);
+        break;
+      }
+      case 'pen_move': {
+        const action = card.querySelector('[data-field="action"]').value;
+        STATE.robot.penDown = (action === 'DOWN');
+        appendConsole(`القلم: ${action === 'DOWN' ? 'إنزال (رسم)' : 'رفع'}`);
+        render();
+        break;
+      }
+      case 'pen_color': {
+        const color = card.querySelector('[data-field="color"]').value;
+        STATE.robot.penColor = color;
+        appendConsole(`تغيير لون القلم`);
+        render();
+        break;
+      }
+      case 'wait_sec': {
+        const sec = parseFloat(card.querySelector('[data-field="sec"]').value) || 1;
+        appendConsole(`انتظار ${sec} ثانية`);
+        await sleep(sec * 1000);
+        break;
+      }
+      case 'magnet_action': {
+        const act = card.querySelector('[data-field="action"]').value;
+        STATE.robot.magnetEnergized = (act === 'BOOST');
+        appendConsole(`مغناطيس: ${act}`);
+        updateMagnetDisks();
+        updateSensorsHUD();
+        render();
+        break;
+      }
+      case 'drive_until_obstacle': {
+        const dist = parseFloat(card.querySelector('[data-field="dist"]').value) || 150;
+        appendConsole(`تحرك حتى يقترب الجدار لمسافة ${dist} ملم`);
+        while (measureForwardDistance() > dist) {
+          if (!STATE.isRunning) break;
+          await runDriveFor(FORWARD, 15);
+        }
+        break;
+      }
+      case 'drive_until_bumper': {
+        appendConsole(`تحرك حتى يلمس الصدام`);
+        while (!STATE.robot.bumperPressed) {
+          if (!STATE.isRunning) break;
+          await runDriveFor(FORWARD, 20);
+        }
+        break;
+      }
+      case 'print_msg': {
+        const msg = card.querySelector('[data-field="msg"]').value;
+        appendConsole(msg);
+        break;
+      }
+      case 'set_cursor_next_row': {
+        appendConsole(''); // ينزل إلى الصف التالي
+        break;
+      }
+      case 'clear_console': {
+        clearConsole();
+        break;
+      }
+    }
+  } finally {
+    card.classList.remove('block-active-exec');
+  }
+}
+
+// Python Code Execution Engine
+async function executePythonMode() {
+  const code = codeEditor.value.trim();
+  if (!code) {
+    appendConsole('يرجى كتابة كود بايثون أولاً!', 'warn');
+    return;
+  }
+
+  // Transpile Python to JS async
+  const js = transpilePython(code);
+  const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+  const runner = new AsyncFunction(
+    'drivetrain', 'pen', 'magnet', 'distance', 'left_bumper', 'right_bumper',
+    'wait', 'print', 'sleep',
+    'FORWARD', 'REVERSE', 'RIGHT', 'LEFT', 'MM', 'INCHES', 'DEGREES', 'PERCENT', 'SECONDS',
+    'DOWN', 'UP', 'BLACK', 'RED', 'GREEN', 'BLUE', 'BOOST', 'DROP',
+    `"use strict";\ntry {\n${js}\n} catch(e) { if(e.message !== "STOPPED") throw e; }`
+  );
+
+  const dtAPI = {
+    drive_for: async (dir, dist) => runDriveFor(dir, dist),
+    turn_for: async (dir, ang) => runTurnFor(dir, ang),
+    set_drive_velocity: (v) => { STATE.robot.driveVelocity = v; },
+    stop: () => {}
+  };
+  const penAPI = {
+    move: (dir) => { STATE.robot.penDown = (dir === DOWN); render(); },
+    set_pen_color: (c) => { STATE.robot.penColor = c; },
+    set_pen_width: (w) => { STATE.robot.penWidth = w; }
+  };
+  const magnetAPI = {
+    energize: (mode) => {
+      STATE.robot.magnetEnergized = (mode === BOOST);
+      updateMagnetDisks();
+      updateSensorsHUD();
+      render();
+    }
+  };
+  const distAPI = {
+    get_distance: () => measureForwardDistance(),
+    found_object: () => measureForwardDistance() < 1800
+  };
+  const bumpAPI = {
+    pressing: () => STATE.robot.bumperPressed
+  };
+
+  await runner(
+    dtAPI, penAPI, magnetAPI, distAPI, bumpAPI, bumpAPI,
+    async (dur) => sleep(dur * 1000), (m) => appendConsole(String(m)), sleep,
+    FORWARD, REVERSE, RIGHT, LEFT, MM, INCHES, DEGREES, PERCENT, SECONDS,
+    DOWN, UP, BLACK, RED, GREEN, BLUE, BOOST, DROP
+  );
+}
+
+function transpilePython(py) {
+  const lines = py.split('\n');
+  const jsLines = [];
+
+  for (let raw of lines) {
+    let line = raw;
+    const indentMatch = line.match(/^(\s*)/);
+    const indent = indentMatch ? indentMatch[1] : '';
+    let trimmed = line.trim();
+
+    if (trimmed.startsWith('#') || trimmed.length === 0) {
+      jsLines.push(line);
+      continue;
+    }
+
+    trimmed = trimmed.replace(/\bTrue\b/g, 'true')
+      .replace(/\bFalse\b/g, 'false')
+      .replace(/\bNone\b/g, 'null')
+      .replace(/\band\b/g, '&&')
+      .replace(/\bor\b/g, '||')
+      .replace(/\bnot\b/g, '!');
+
+    const forMatch = trimmed.match(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\((.*?)\)\s*:/);
+    if (forMatch) {
+      const v = forMatch[1];
+      jsLines.push(`${indent}for (let ${v} = 0; ${v} < ${forMatch[2]}; ${v}++) {`);
+      continue;
+    }
+
+    const whileMatch = trimmed.match(/^while\s+(.*?)\s*:/);
+    if (whileMatch) {
+      jsLines.push(`${indent}while (${whileMatch[1]}) {`);
+      jsLines.push(`${indent}  await sleep(10);`);
+      continue;
+    }
+
+    const ifMatch = trimmed.match(/^if\s+(.*?)\s*:/);
+    if (ifMatch) { jsLines.push(`${indent}if (${ifMatch[1]}) {`); continue; }
+    const elifMatch = trimmed.match(/^elif\s+(.*?)\s*:/);
+    if (elifMatch) { jsLines.push(`${indent}} else if (${elifMatch[1]}) {`); continue; }
+    if (trimmed === 'else:') { jsLines.push(`${indent}} else {`); continue; }
+
+    const asyncFns = ['drivetrain.drive_for', 'drivetrain.turn_for', 'wait'];
+    for (const fn of asyncFns) {
+      const reg = new RegExp(`(?<!await\\s+)${fn.replace('.', '\\.')}\\s*\\(`, 'g');
+      trimmed = trimmed.replace(reg, `await ${fn}(`);
+    }
+
+    jsLines.push(indent + trimmed + ';');
+  }
+
+  // Close blocks
+  const result = [];
+  const indentStack = [0];
+  for (let i = 0; i < jsLines.length; i++) {
+    const raw = jsLines[i];
+    if (raw.trim().length === 0 || raw.trim().startsWith('#')) {
+      result.push(raw);
+      continue;
+    }
+    const currentIndent = raw.search(/\S/);
+    while (indentStack.length > 1 && currentIndent < indentStack[indentStack.length - 1]) {
+      indentStack.pop();
+      result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
+    }
+    result.push(raw);
+    if (raw.trim().endsWith('{')) {
+      indentStack.push(currentIndent + 4);
+    }
+  }
+  while (indentStack.length > 1) {
+    indentStack.pop();
+    result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
+  }
+
+  return result.join('\n');
+}
+
+async function startExecution() {
+  if (STATE.isRunning) return;
+
+  STATE.isRunning = true;
+  btnRun.disabled = true;
+  btnStop.disabled = false;
+  statusDot.className = 'dot running';
+  statusText.innerText = 'جاري التنفيذ...';
+
+  appendConsole(`🚀 بدء تشغيل البرنامج (${CURRENT_MODE === 'blocks' ? 'اللبنات' : 'بايثون'})...`, 'info');
+
+  try {
+    if (CURRENT_MODE === 'blocks') {
+      await executeBlocksMode();
+    } else {
+      await executePythonMode();
+    }
+    appendConsole('✅ اكتمل التنفيذ بنجاح!', 'info');
+  } catch (err) {
+    if (err.message !== 'STOPPED') {
+      appendConsole(`❌ خطأ أثناء التشغيل: ${err.message}`, 'error');
+    }
+  } finally {
+    finishExecution();
+  }
+}
+
+function stopExecution() {
+  if (!STATE.isRunning) return;
+  STATE.isRunning = false;
+  if (STATE.abortController) {
+    STATE.abortController();
+    STATE.abortController = null;
+  }
+  appendConsole('⏹ تم إيقاف الروبوت يدوياً.', 'warn');
+  finishExecution();
+}
+
+function finishExecution() {
+  STATE.isRunning = false;
+  btnRun.disabled = false;
+  btnStop.disabled = true;
+  statusDot.className = 'dot stopped';
+  statusText.innerText = 'متوقف';
+  document.querySelectorAll('.block-active-exec').forEach(el => el.classList.remove('block-active-exec'));
+  updateSensorsHUD();
+  render();
+}
+
+/* =========================================================================
+   Unified Presets (Loads into active mode)
+   ========================================================================= */
+const UNIFIED_PRESETS = {
+  square: {
+    blocks: [
+      { type: 'pen_color', vals: { color: '#ef4444' } },
+      { type: 'pen_move', vals: { action: 'DOWN' } },
+      { type: 'repeat_times', vals: { times: '4' } },
+      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '250' } },
+      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } }
+    ],
+    python: `pen.set_pen_color(RED)\npen.move(DOWN)\nfor count in range(4):\n    drivetrain.drive_for(FORWARD, 250, MM)\n    drivetrain.turn_for(RIGHT, 90, DEGREES)\npen.move(UP)\nprint("تم رسم المربع!")\n`
+  },
+  polygon: {
+    blocks: [
+      { type: 'pen_color', vals: { color: '#3b82f6' } },
+      { type: 'pen_move', vals: { action: 'DOWN' } },
+      { type: 'repeat_times', vals: { times: '8' } },
+      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } },
+      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '135' } }
+    ],
+    python: `pen.set_pen_color(BLUE)\npen.move(DOWN)\nfor i in range(8):\n    drivetrain.drive_for(FORWARD, 200, MM)\n    drivetrain.turn_for(RIGHT, 135, DEGREES)\npen.move(UP)\n`
+  },
+  avoid_distance: {
+    blocks: [
+      { type: 'drive_until_obstacle', vals: { dist: '180' } },
+      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
+      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
+    ],
+    python: `while distance.get_distance(MM) > 180:\n    drivetrain.drive_for(FORWARD, 25, MM)\nprint("تم رصد عائق!")\ndrivetrain.turn_for(RIGHT, 90, DEGREES)\ndrivetrain.drive_for(FORWARD, 200, MM)\n`
+  },
+  bumper_bounce: {
+    blocks: [
+      { type: 'drive_until_bumper' },
+      { type: 'drive_for', vals: { dir: 'REVERSE', dist: '150' } },
+      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
+      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
+    ],
+    python: `while not left_bumper.pressing():\n    drivetrain.drive_for(FORWARD, 30, MM)\nprint("اصطدام!")\ndrivetrain.drive_for(REVERSE, 150, MM)\ndrivetrain.turn_for(RIGHT, 90, DEGREES)\n`
+  },
+  pickup_disk: {
+    playground: 'disk',
+    blocks: [
+      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '700' } },
+      { type: 'magnet_action', vals: { action: 'BOOST' } },
+      { type: 'wait_sec', vals: { sec: '1' } },
+      { type: 'drive_for', vals: { dir: 'REVERSE', dist: '700' } },
+      { type: 'magnet_action', vals: { action: 'DROP' } }
+    ],
+    python: `drivetrain.drive_for(FORWARD, 700, MM)\nmagnet.energize(BOOST)\nwait(1, SECONDS)\ndrivetrain.drive_for(REVERSE, 700, MM)\nmagnet.energize(DROP)\n`
+  },
+  maze_navigation: {
+    playground: 'maze',
+    blocks: [
+      { type: 'repeat_times', vals: { times: '4' } },
+      { type: 'drive_until_obstacle', vals: { dist: '200' } },
+      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } }
+    ],
+    python: `for step in range(6):\n    if distance.get_distance(MM) > 220:\n        drivetrain.drive_for(FORWARD, 200, MM)\n    else:\n        drivetrain.turn_for(RIGHT, 90, DEGREES)\n`
+  }
+};
+
+function loadPresetExample(key) {
+  if (!key || !UNIFIED_PRESETS[key]) return;
+  stopExecution();
+
+  const preset = UNIFIED_PRESETS[key];
+  if (preset.playground) {
+    document.getElementById('playgroundSelect').value = preset.playground;
+    initPlayground(preset.playground);
+  } else {
+    if (STATE.playgroundType !== 'grid' && STATE.playgroundType !== 'art') {
+      document.getElementById('playgroundSelect').value = 'grid';
+      initPlayground('grid');
+    }
+  }
+
+  // Load into blocks
+  const existing = workspaceDropzone.querySelectorAll('.placed-block');
+  existing.forEach(b => b.remove());
+  for (const item of preset.blocks) {
+    const el = createPlacedBlockElement(item.type, item.vals);
+    if (el) workspaceDropzone.appendChild(el);
+  }
+  updateBlockCount();
+
+  // Load into python
+  codeEditor.value = preset.python;
+  updateCodeLineNumbers();
+
+  appendConsole(`تم تحميل المثال: ${key}`, 'info');
+}
+
+// Startup
+window.addEventListener('DOMContentLoaded', () => {
+  initPlayground('grid');
+  loadPresetExample('square');
+});
+</script>
+</body>
+</html>

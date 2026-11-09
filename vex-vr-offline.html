@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>محاكي VEXcode VR التعليمي — بدون إنترنت</title>
+<style>
+:root {
+  --bg-dark: #0f172a;
+  --panel-bg: #1e293b;
+  --line-color: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary: #38bdf8;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --accent-purple: #a855f7;
+  --grid-line: #cbd5e1;
+  --vex-red: #dc2626;
+  --vex-dark: #18181b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header */
+header {
+  background: linear-gradient(90deg, #1e1b4b 0%, #0f172a 100%);
+  border-bottom: 2px solid #312e81;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-badge {
+  background: #dc2626;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.brand-title h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+.brand-title span {
+  font-size: 12px;
+  color: var(--accent-green);
+  background: rgba(34, 197, 94, 0.15);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Controls Bar */
+.toolbar {
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--line-color);
+  padding: 8px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.btn-run {
+  background: #16a34a;
+  color: #fff;
+}
+.btn-run:hover { background: #15803d; }
+.btn-stop {
+  background: var(--accent-red);
+  color: #fff;
+}
+.btn-stop:hover { background: #b91c1c; }
+.btn-reset {
+  background: #475569;
+  color: #fff;
+}
+.btn-reset:hover { background: #334155; }
+.btn-clear {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--line-color);
+}
+.btn-clear:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+
+.select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+select {
+  background: #0f172a;
+  color: var(--text-main);
+  border: 1px solid var(--line-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+select:focus { border-color: var(--primary); }
+
+.speed-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.speed-wrapper input[type="range"] {
+  accent-color: var(--primary);
+  width: 90px;
+  cursor: pointer;
+}
+
+/* Layout */
+.workspace-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Code Column */
+.code-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line-color);
+  min-width: 320px;
+  background: #0b1120;
+}
+.panel-tab {
+  background: #131d31;
+  border-bottom: 1px solid var(--line-color);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.quick-snippets {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.chip {
+  background: #1e293b;
+  color: #38bdf8;
+  font-size: 11px;
+  font-family: monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #334155;
+  direction: ltr;
+}
+.chip:hover {
+  background: #38bdf8;
+  color: #000;
+}
+
+.editor-box {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+.line-numbers {
+  width: 44px;
+  padding: 12px 6px;
+  background: #070d19;
+  color: #475569;
+  text-align: right;
+  font-family: Consolas, 'Fira Code', Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+  overflow: hidden;
+  border-right: 1px solid #1e293b;
+}
+#codeEditor {
+  flex: 1;
+  background: transparent;
+  color: #f1f5f9;
+  border: none;
+  outline: none;
+  padding: 12px;
+  font-family: Consolas, 'Fira Code', Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+  direction: ltr;
+  text-align: left;
+}
+
+/* Console Panel */
+.console-box {
+  height: 150px;
+  background: #070b13;
+  border-top: 1px solid var(--line-color);
+  display: flex;
+  flex-direction: column;
+}
+.console-header {
+  background: #0d1527;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #1e293b;
+}
+#consoleOutput {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  font-family: Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #93c5fd;
+  direction: ltr;
+  text-align: left;
+  white-space: pre-wrap;
+}
+.log-err { color: #f87171 !important; }
+.log-info { color: #34d399 !important; }
+.log-warn { color: #fbbf24 !important; }
+
+/* Simulation Column */
+.sim-panel {
+  flex: 1.25;
+  display: flex;
+  flex-direction: column;
+  background: #111827;
+  position: relative;
+}
+
+/* HUD / Dashboard Sensors */
+.hud-bar {
+  background: #1f2937;
+  border-bottom: 1px solid var(--line-color);
+  padding: 8px 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  font-size: 11.5px;
+}
+.hud-item {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hud-label {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.hud-val {
+  font-family: Consolas, monospace;
+  font-weight: 700;
+  color: #38bdf8;
+  font-size: 12px;
+}
+
+/* Canvas Area */
+.canvas-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+}
+#vrCanvas {
+  background: #f8fafc;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+/* Reference Modal / Help */
+.help-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.help-dialog {
+  background: var(--panel-bg);
+  border: 1px solid var(--line-color);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+}
+.dialog-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dialog-content {
+  padding: 16px;
+  overflow-y: auto;
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.dialog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.dialog-content th, .dialog-content td {
+  padding: 8px 10px;
+  border: 1px solid var(--line-color);
+  text-align: right;
+}
+.dialog-content th { background: #0f172a; color: var(--primary); }
+.cmd-code { font-family: monospace; color: #38bdf8; direction: ltr; display: inline-block; }
+
+/* Status indicator badge */
+.status-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid #334155;
+  color: #fff;
+  z-index: 10;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.dot.running { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.dot.stopped { background: #ef4444; }
+
+@media (max-width: 900px) {
+  .workspace-container { flex-direction: column-reverse; overflow-y: auto; }
+  .code-panel { min-height: 380px; }
+  .sim-panel { min-height: 480px; }
+  body { overflow: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="brand-title">
+    <div class="brand-badge">VEX VR</div>
+    <h1>محاكي VEXcode VR التعليمي للبايثون</h1>
+    <span>يعمل بدون إنترنت 100% ⚡</span>
+  </div>
+  <div>
+    <button class="btn btn-clear" onclick="toggleHelp(true)">📖 دليل الأوامر</button>
+  </div>
+</header>
+
+<!-- Main Toolbar -->
+<div class="toolbar">
+  <button id="btnRun" class="btn btn-run" onclick="startExecution()">
+    ▶ تشغيل الكود
+  </button>
+  <button id="btnStop" class="btn btn-stop" onclick="stopExecution()" disabled>
+    ⏹ إيقاف
+  </button>
+  <button class="btn btn-reset" onclick="resetPlayground()">
+    🔄 إعادة تعيين الملعب
+  </button>
+
+  <div class="select-wrapper">
+    <label>الساحة (Playground):</label>
+    <select id="playgroundSelect" onchange="changePlayground(this.value)">
+      <option value="grid">ساحة الرسم الشبكية (Grid Map)</option>
+      <option value="art">لوحة الرسم الفنية (Art Canvas)</option>
+      <option value="disk">ملعب الأقراص والالتقاط (Disk Transport)</option>
+      <option value="maze">متاهة الجدران (Wall Maze)</option>
+    </select>
+  </div>
+
+  <div class="select-wrapper">
+    <label>أمثلة جاهزة:</label>
+    <select id="exampleSelect" onchange="loadExample(this.value)">
+      <option value="">-- اختر مثالاً تعليمياً --</option>
+      <option value="square">1. رسم مربع ملون (Pen & Drive)</option>
+      <option value="polygon">2. رسم مضلع وحلقات For Loop</option>
+      <option value="distance_stop">3. مستشعر المسافة وتفادي الاصطدام</option>
+      <option value="bumper_turn">4. مستشعر الصدام (Bumper) والارتداد</option>
+      <option value="magnet_pickup">5. المغناطيس الكهربائي ونقل الأقراص</option>
+      <option value="color_detect">6. استشعار الألوان والتحكم التلقائي</option>
+      <option value="maze_solver">7. تفادي المتاهة بالخوارزميات</option>
+    </select>
+  </div>
+
+  <div class="speed-wrapper">
+    <span>السرعة:</span>
+    <input type="range" id="simSpeed" min="1" max="10" value="5" title="سرعة المحاكاة">
+    <span id="speedVal">5x</span>
+  </div>
+</div>
+
+<!-- Main Workspace -->
+<div class="workspace-container">
+  
+  <!-- Editor & Console (Left / RTL Right) -->
+  <div class="code-panel">
+    <div class="panel-tab">
+      <span>محرر كود بايثون (VEX VR Python API)</span>
+      <div class="quick-snippets">
+        <span class="chip" onclick="insertCode('drivetrain.drive_for(FORWARD, 200, MM)')">drive_for</span>
+        <span class="chip" onclick="insertCode('drivetrain.turn_for(RIGHT, 90, DEGREES)')">turn_for</span>
+        <span class="chip" onclick="insertCode('pen.set_pen_color(RED)\npen.move(DOWN)')">pen.down</span>
+        <span class="chip" onclick="insertCode('magnet.energize(BOOST)')">magnet.boost</span>
+      </div>
+    </div>
+
+    <div class="editor-box">
+      <div class="line-numbers" id="lineNumbers">1</div>
+      <textarea id="codeEditor" spellcheck="false" placeholder="# اكتب أوامر بايثون هنا..."></textarea>
+    </div>
+
+    <div class="console-box">
+      <div class="console-header">
+        <span>شاشة المخرجات (Console Output)</span>
+        <button class="btn btn-clear" style="padding: 2px 8px; font-size:11px;" onclick="clearConsole()">مسح</button>
+      </div>
+      <div id="consoleOutput"></div>
+    </div>
+  </div>
+
+  <!-- Robot Simulator Canvas (Right) -->
+  <div class="sim-panel">
+    <!-- Sensors HUD -->
+    <div class="hud-bar">
+      <div class="hud-item">
+        <span class="hud-label">الموضع (X, Y) ملم</span>
+        <span class="hud-val" id="hudPos">X: 0, Y: 0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">زاوية الرأس (Heading)</span>
+        <span class="hud-val" id="hudHeading">0.0°</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">مستشعر المسافة</span>
+        <span class="hud-val" id="hudDistance">250 mm</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">حساس الصدم (Bumper)</span>
+        <span class="hud-val" id="hudBumper">OFF (سليم)</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">مستشعر الألوان السفلي</span>
+        <span class="hud-val" id="hudColor">NONE</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">المغناطيس (Magnet)</span>
+        <span class="hud-val" id="hudMagnet">OFF</span>
+      </div>
+    </div>
+
+    <!-- Canvas Simulation Area -->
+    <div class="canvas-wrapper">
+      <div class="status-pill">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">جاهز للتنفيذ</span>
+      </div>
+      <canvas id="vrCanvas" width="560" height="560"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Help Modal -->
+<div class="help-overlay" id="helpModal" onclick="toggleHelp(false)">
+  <div class="help-dialog" onclick="event.stopPropagation()">
+    <div class="dialog-header">
+      <h3 style="color:var(--primary)">📖 دليل أوامر VEXcode VR المتاحة</h3>
+      <button class="btn btn-clear" onclick="toggleHelp(false)">✖ إغلاق</button>
+    </div>
+    <div class="dialog-content">
+      <p>يدعم هذا المحاكي جميع أوامر VEX VR Python الأساسية المتوافقة مع المناهج التعليمية:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>الجهاز / الفئة</th>
+            <th>الدالة والمثال في بايثون</th>
+            <th>الوصف والتأثير</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Drivetrain</strong> (التحكم بالحركة)</td>
+            <td>
+              <span class="cmd-code">drivetrain.drive_for(FORWARD, 200, MM)</span><br>
+              <span class="cmd-code">drivetrain.drive_for(REVERSE, 150, MM)</span><br>
+              <span class="cmd-code">drivetrain.turn_for(RIGHT, 90, DEGREES)</span><br>
+              <span class="cmd-code">drivetrain.drive(FORWARD)</span> / <span class="cmd-code">stop()</span><br>
+              <span class="cmd-code">drivetrain.set_drive_velocity(80, PERCENT)</span>
+            </td>
+            <td>التحرك للأمام أو الخلف بمسافة محددة، أو الدوران بزاوية، والتحكم بالسرعة.</td>
+          </tr>
+          <tr>
+            <td><strong>Pen</strong> (قلم الرسم)</td>
+            <td>
+              <span class="cmd-code">pen.move(DOWN)</span> / <span class="cmd-code">pen.move(UP)</span><br>
+              <span class="cmd-code">pen.set_pen_color(BLACK / RED / GREEN / BLUE)</span><br>
+              <span class="cmd-code">pen.set_pen_width(5)</span>
+            </td>
+            <td>إنزال القلم لرسم المسار أو رفعه، وتغيير ألوان الرسم على أرضية الملعب.</td>
+          </tr>
+          <tr>
+            <td><strong>Distance Sensor</strong> (المسافة)</td>
+            <td>
+              <span class="cmd-code">distance.get_distance(MM)</span><br>
+              <span class="cmd-code">distance.found_object()</span>
+            </td>
+            <td>قراءة المسافة للأمام مقدرة بالملم، والتحقق من وجود حواجز أو جدران.</td>
+          </tr>
+          <tr>
+            <td><strong>Bumper Sensor</strong> (الصدام)</td>
+            <td>
+              <span class="cmd-code">left_bumper.pressing()</span><br>
+              <span class="cmd-code">right_bumper.pressing()</span>
+            </td>
+            <td>يرجع <span class="cmd-code">True</span> عند اصطدام مقدمة الروبوت بأي جدار.</td>
+          </tr>
+          <tr>
+            <td><strong>Magnet</strong> (المغناطيس)</td>
+            <td>
+              <span class="cmd-code">magnet.energize(BOOST)</span><br>
+              <span class="cmd-code">magnet.energize(DROP)</span>
+            </td>
+            <td>تشغيل المغناطيس لالتقاط الأقراص المعدنية أو إيقافه لإفلاتها.</td>
+          </tr>
+          <tr>
+            <td><strong>Down Eye Sensor</strong> (حساس الألوان)</td>
+            <td>
+              <span class="cmd-code">down_eye.detect(RED / GREEN / BLUE)</span>
+            </td>
+            <td>الكشف عن لون البلاطة أو القرص الموجود تحت مقدمة الروبوت مباشرة.</td>
+          </tr>
+          <tr>
+            <td><strong>الوقت والطباعة</strong></td>
+            <td>
+              <span class="cmd-code">wait(1, SECONDS)</span><br>
+              <span class="cmd-code">print("نص للتتبع...")</span>
+            </td>
+            <td>إيقاف مؤقت، وطباعة القيم في شاشة الـ Console المدمجة.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * VEX VR Simulator Engine - Pure Client-side Offline Implementation
+ * Provides standard VEX VR Python APIs and executes code asynchronously.
+ */
+
+// Global Constants matching VEXcode VR
+const FORWARD = 'FORWARD';
+const REVERSE = 'REVERSE';
+const RIGHT = 'RIGHT';
+const LEFT = 'LEFT';
+const MM = 'MM';
+const INCHES = 'INCHES';
+const DEGREES = 'DEGREES';
+const PERCENT = 'PERCENT';
+const SECONDS = 'SECONDS';
+const MSEC = 'MSEC';
+const DOWN = 'DOWN';
+const UP = 'UP';
+const BLACK = '#0f172a';
+const RED = '#ef4444';
+const GREEN = '#10b981';
+const BLUE = '#3b82f6';
+const BOOST = 'BOOST';
+const DROP = 'DROP';
+
+// Simulator State
+const STATE = {
+  // Playground & Coordinate space: -1000 to +1000 mm (2000mm total width & height)
+  arenaSize: 2000, 
+  canvasSize: 560,
+  robot: {
+    x: 0,           // in mm (-900 to 900)
+    y: 0,           // in mm
+    angle: 90,      // in degrees (0 = East, 90 = North, 180 = West, 270 = South)
+    driveVelocity: 100, // percent
+    turnVelocity: 100,
+    penDown: false,
+    penColor: '#0f172a',
+    penWidth: 4,
+    magnetEnergized: false,
+    pickedDisk: null,
+    bumperPressed: false,
+    drivingContinuous: 0 // 1 = forward, -1 = reverse, 0 = stopped
+  },
+  playgroundType: 'grid',
+  disks: [],
+  walls: [],
+  lines: [], // Persistent drawing traces
+  isRunning: false,
+  abortController: null,
+  speedMultiplier: 5
+};
+
+// Canvas & Contexts
+const canvas = document.getElementById('vrCanvas');
+const ctx = canvas.getContext('2d');
+
+// DOM Elements
+const editor = document.getElementById('codeEditor');
+const lineNumbers = document.getElementById('lineNumbers');
+const consoleOutput = document.getElementById('consoleOutput');
+const btnRun = document.getElementById('btnRun');
+const btnStop = document.getElementById('btnStop');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const simSpeedInput = document.getElementById('simSpeed');
+const speedValSpan = document.getElementById('speedVal');
+
+// HUD Elements
+const hudPos = document.getElementById('hudPos');
+const hudHeading = document.getElementById('hudHeading');
+const hudDistance = document.getElementById('hudDistance');
+const hudBumper = document.getElementById('hudBumper');
+const hudColor = document.getElementById('hudColor');
+const hudMagnet = document.getElementById('hudMagnet');
+
+// Synchronize Speed slider
+simSpeedInput.addEventListener('input', (e) => {
+  STATE.speedMultiplier = parseFloat(e.target.value);
+  speedValSpan.innerText = STATE.speedMultiplier + 'x';
+});
+
+// Editor Line Numbering
+editor.addEventListener('input', updateLineNumbers);
+editor.addEventListener('scroll', () => {
+  lineNumbers.scrollTop = editor.scrollTop;
+});
+
+// Enable TAB in Editor
+editor.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    editor.value = editor.value.substring(0, start) + "    " + editor.value.substring(end);
+    editor.selectionStart = editor.selectionEnd = start + 4;
+    updateLineNumbers();
+  }
+});
+
+function updateLineNumbers() {
+  const lines = editor.value.split('\n').length;
+  lineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+}
+
+function insertCode(snippet) {
+  const start = editor.selectionStart;
+  const end = editor.selectionEnd;
+  const text = editor.value;
+  editor.value = text.substring(0, start) + snippet + text.substring(end);
+  editor.selectionStart = editor.selectionEnd = start + snippet.length;
+  editor.focus();
+  updateLineNumbers();
+}
+
+function clearConsole() {
+  consoleOutput.innerHTML = '';
+}
+
+function appendConsole(msg, type = 'normal') {
+  const p = document.createElement('div');
+  if (type === 'error') p.className = 'log-err';
+  else if (type === 'info') p.className = 'log-info';
+  else if (type === 'warn') p.className = 'log-warn';
+  p.textContent = msg;
+  consoleOutput.appendChild(p);
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function toggleHelp(show) {
+  document.getElementById('helpModal').style.display = show ? 'flex' : 'none';
+}
+
+/* =========================================================================
+   Coordinates & Math Utilities
+   Arena is [-1000, 1000] mm centered at (0, 0)
+   Canvas is [0, 560] px
+   ========================================================================= */
+function mmToPx(mm) {
+  return (mm / STATE.arenaSize) * STATE.canvasSize;
+}
+
+function toScreenCoord(x, y) {
+  // Screen X: 0 is -1000mm, 560 is +1000mm
+  const sx = (x + 1000) / STATE.arenaSize * STATE.canvasSize;
+  // Screen Y: Canvas 0 is top (+1000mm in VEX coordinates)
+  const sy = (1000 - y) / STATE.arenaSize * STATE.canvasSize;
+  return { x: sx, y: sy };
+}
+
+function normalizeAngle(ang) {
+  ang = ang % 360;
+  if (ang < 0) ang += 360;
+  return ang;
+}
+
+function degToRad(deg) {
+  return deg * Math.PI / 180;
+}
+
+/* =========================================================================
+   Playground Setup & Environments
+   ========================================================================= */
+function initPlayground(type) {
+  STATE.playgroundType = type;
+  STATE.lines = [];
+  STATE.disks = [];
+  STATE.walls = [];
+  STATE.robot.penDown = false;
+  STATE.robot.penColor = '#0f172a';
+  STATE.robot.penWidth = 4;
+  STATE.robot.magnetEnergized = false;
+  STATE.robot.pickedDisk = null;
+  STATE.robot.bumperPressed = false;
+  STATE.robot.drivingContinuous = 0;
+
+  // Boundary walls (Arena edges: ±960mm)
+  const bound = 960;
+  STATE.walls.push({ x1: -bound, y1: -bound, x2: bound, y2: -bound });
+  STATE.walls.push({ x1: bound, y1: -bound, x2: bound, y2: bound });
+  STATE.walls.push({ x1: bound, y1: bound, x2: -bound, y2: bound });
+  STATE.walls.push({ x1: -bound, y1: bound, x2: -bound, y2: -bound });
+
+  if (type === 'grid' || type === 'art') {
+    STATE.robot.x = 0;
+    STATE.robot.y = 0;
+    STATE.robot.angle = 90; // Face North
+  } 
+  else if (type === 'disk') {
+    // Disk Transport playground
+    STATE.robot.x = 0;
+    STATE.robot.y = -700;
+    STATE.robot.angle = 90;
+
+    // Disks scattered
+    STATE.disks = [
+      { id: 1, x: 0, y: 0, radius: 45, color: '#ef4444', name: 'RED' },
+      { id: 2, x: -350, y: 200, radius: 45, color: '#3b82f6', name: 'BLUE' },
+      { id: 3, x: 350, y: 200, radius: 45, color: '#10b981', name: 'GREEN' },
+      { id: 4, x: 0, y: 500, radius: 45, color: '#ef4444', name: 'RED' }
+    ];
+  }
+  else if (type === 'maze') {
+    // Wall Maze Playground
+    STATE.robot.x = -800;
+    STATE.robot.y = -800;
+    STATE.robot.angle = 90;
+
+    // Add maze inner walls
+    const mWalls = [
+      { x1: -600, y1: -1000, x2: -600, y2: -200 },
+      { x1: -600, y1: -200, x2: -200, y2: -200 },
+      { x1: -200, y1: -600, x2: -200, y2: 200 },
+      { x1: -200, y1: 200, x2: 400, y2: 200 },
+      { x1: 200, y1: -600, x2: 600, y2: -600 },
+      { x1: 200, y1: -200, x2: 600, y2: -200 },
+      { x1: -200, y1: 600, x2: 600, y2: 600 },
+      { x1: 600, y1: -600, x2: 600, y2: 200 }
+    ];
+    STATE.walls.push(...mWalls);
+
+    // Goal Disk
+    STATE.disks = [
+      { id: 99, x: 800, y: 800, radius: 55, color: '#f59e0b', name: 'GOAL' }
+    ];
+  }
+
+  updateSensorsHUD();
+  render();
+}
+
+function changePlayground(type) {
+  stopExecution();
+  initPlayground(type);
+  appendConsole(`تم تغيير الساحة إلى: ${type}`, 'info');
+}
+
+function resetPlayground() {
+  stopExecution();
+  initPlayground(STATE.playgroundType);
+  appendConsole('تمت إعادة تعيين موقع الروبوت والملعب.', 'info');
+}
+
+/* =========================================================================
+   Rendering Engine
+   ========================================================================= */
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 1. Draw Grid Background
+  drawBackground();
+
+  // 2. Draw Pen Trails
+  drawTrails();
+
+  // 3. Draw Disks
+  drawDisks();
+
+  // 4. Draw Walls
+  drawWalls();
+
+  // 5. Draw Robot
+  drawRobot();
+}
+
+function drawBackground() {
+  const cw = canvas.width;
+  const ch = canvas.height;
+
+  // Background
+  ctx.fillStyle = STATE.playgroundType === 'art' ? '#ffffff' : '#f8fafc';
+  ctx.fillRect(0, 0, cw, ch);
+
+  if (STATE.playgroundType === 'grid' || STATE.playgroundType === 'disk') {
+    // 200mm grid intervals (10x10 grid)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e2e8f0';
+
+    for (let x = -800; x <= 800; x += 200) {
+      const p1 = toScreenCoord(x, -1000);
+      const p2 = toScreenCoord(x, 1000);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+    for (let y = -800; y <= 800; y += 200) {
+      const p1 = toScreenCoord(-1000, y);
+      const p2 = toScreenCoord(1000, y);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    // Central Axes
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 2;
+    const midX = toScreenCoord(0, 0);
+    ctx.beginPath();
+    ctx.moveTo(midX.x, 0); ctx.lineTo(midX.x, ch);
+    ctx.moveTo(0, midX.y); ctx.lineTo(cw, midX.y);
+    ctx.stroke();
+  }
+
+  // Border frame
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(4, 4, cw - 8, ch - 8);
+}
+
+function drawTrails() {
+  for (let i = 0; i < STATE.lines.length; i++) {
+    const line = STATE.lines[i];
+    const p1 = toScreenCoord(line.x1, line.y1);
+    const p2 = toScreenCoord(line.x2, line.y2);
+
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.strokeStyle = line.color;
+    ctx.lineWidth = mmToPx(line.width * 5);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+}
+
+function drawDisks() {
+  for (const d of STATE.disks) {
+    const sc = toScreenCoord(d.x, d.y);
+    const rad = mmToPx(d.radius);
+
+    ctx.beginPath();
+    ctx.arc(sc.x, sc.y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = d.color;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#1e293b';
+    ctx.stroke();
+
+    // Inner ring to look like VEX VR game disks
+    ctx.beginPath();
+    ctx.arc(sc.x, sc.y, rad * 0.45, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+  }
+}
+
+function drawWalls() {
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = mmToPx(35);
+  ctx.lineCap = 'square';
+
+  for (const w of STATE.walls) {
+    // Only draw inner walls, boundary is covered by frame
+    if (Math.abs(w.x1) === 960 && Math.abs(w.x2) === 960) continue;
+    if (Math.abs(w.y1) === 960 && Math.abs(w.y2) === 960) continue;
+
+    const p1 = toScreenCoord(w.x1, w.y1);
+    const p2 = toScreenCoord(w.x2, w.y2);
+    ctx.beginPath();
+    ctx.moveTo(p1.x, p1.y);
+    ctx.lineTo(p2.x, p2.y);
+    ctx.stroke();
+  }
+}
+
+function drawRobot() {
+  const sc = toScreenCoord(STATE.robot.x, STATE.robot.y);
+  // Robot dimensions in VEX VR: Approx 200mm x 200mm
+  const rWidth = mmToPx(190);
+  const rLength = mmToPx(200);
+
+  ctx.save();
+  ctx.translate(sc.x, sc.y);
+  // Heading in VEX: 0 is East (Right), 90 is North (Up)
+  // In canvas context: 0 is Right, but rotation is clockwise.
+  // So rotation angle = -(angle - 0) in standard math.
+  ctx.rotate(-degToRad(STATE.robot.angle - 90));
+
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 4;
+
+  // Robot Body (Main Chassis)
+  ctx.fillStyle = '#1e293b';
+  ctx.beginPath();
+  ctx.roundRect(-rWidth / 2, -rLength / 2, rWidth, rLength, 6);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+
+  // Inner accents (VEX Red & Decals)
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(-rWidth / 2 + 5, -rLength / 2 + 10, rWidth - 10, 16);
+
+  // Wheels (Left and Right)
+  ctx.fillStyle = '#090d16';
+  ctx.fillRect(-rWidth / 2 - 4, -rLength / 3, 6, rLength * 0.7);
+  ctx.fillRect(rWidth / 2 - 2, -rLength / 3, 6, rLength * 0.7);
+
+  // Front Bumper / Eye Sensor Indicator
+  ctx.fillStyle = STATE.robot.bumperPressed ? '#ef4444' : '#38bdf8';
+  ctx.beginPath();
+  ctx.arc(0, -rLength / 2 + 8, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Magnet / Pen center point
+  if (STATE.robot.penDown) {
+    ctx.fillStyle = STATE.robot.penColor;
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Direction arrow indicator
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(0, -rLength / 2 + 2);
+  ctx.lineTo(-6, -rLength / 2 + 16);
+  ctx.lineTo(6, -rLength / 2 + 16);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/* =========================================================================
+   Sensor Calculations (Raycasting & Collision)
+   ========================================================================= */
+function updateSensorsHUD() {
+  hudPos.innerText = `X: ${Math.round(STATE.robot.x)}, Y: ${Math.round(STATE.robot.y)}`;
+  hudHeading.innerText = `${normalizeAngle(Math.round(STATE.robot.angle))}°`;
+
+  const dist = measureForwardDistance();
+  hudDistance.innerText = dist < 2000 ? `${Math.round(dist)} mm` : '> 2000 mm';
+
+  hudBumper.innerText = STATE.robot.bumperPressed ? '🚨 ON (مضغوط)' : 'OFF (سليم)';
+  hudBumper.style.color = STATE.robot.bumperPressed ? '#ef4444' : '#38bdf8';
+
+  const col = detectDownColor();
+  hudColor.innerText = col;
+  hudColor.style.color = col === 'RED' ? '#ef4444' : col === 'BLUE' ? '#38bdf8' : col === 'GREEN' ? '#10b981' : '#94a3b8';
+
+  hudMagnet.innerText = STATE.robot.magnetEnergized ? '⚡ BOOST' : 'OFF';
+  hudMagnet.style.color = STATE.robot.magnetEnergized ? '#f59e0b' : '#38bdf8';
+}
+
+function lineIntersection(p1, p2, p3, p4) {
+  const x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
+  const x3 = p3.x, y3 = p3.y, x4 = p4.x, y4 = p4.y;
+  const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+  if (denom === 0) return null;
+
+  const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+  const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+
+  if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1) {
+    return {
+      x: x1 + ua * (x2 - x1),
+      y: y1 + ua * (y2 - y1),
+      dist: ua
+    };
+  }
+  return null;
+}
+
+function measureForwardDistance() {
+  const rad = degToRad(STATE.robot.angle);
+  const maxRange = 2500;
+  const rx = STATE.robot.x;
+  const ry = STATE.robot.y;
+  const targetX = rx + Math.cos(rad) * maxRange;
+  const targetY = ry + Math.sin(rad) * maxRange;
+
+  let minD = maxRange;
+
+  // Check all walls
+  for (const w of STATE.walls) {
+    const hit = lineIntersection(
+      { x: rx, y: ry },
+      { x: targetX, y: targetY },
+      { x: w.x1, y: w.y1 },
+      { x: w.x2, y: w.y2 }
+    );
+    if (hit) {
+      const d = Math.hypot(hit.x - rx, hit.y - ry);
+      if (d < minD) minD = d;
+    }
+  }
+
+  // Check disks as obstacles
+  for (const disk of STATE.disks) {
+    if (disk === STATE.robot.pickedDisk) continue;
+    const d = Math.hypot(disk.x - rx, disk.y - ry);
+    // Rough cone check
+    const angleToDisk = Math.atan2(disk.y - ry, disk.x - rx);
+    let diff = Math.abs(normalizeAngle(STATE.robot.angle) - normalizeAngle(angleToDisk * 180 / Math.PI));
+    if (diff > 180) diff = 360 - diff;
+    if (diff < 15 && d - disk.radius < minD && d > disk.radius) {
+      minD = Math.max(0, d - disk.radius);
+    }
+  }
+
+  // Deduct robot radius (~100mm)
+  return Math.max(0, minD - 100);
+}
+
+function checkCollision(nx, ny) {
+  // Check if robot bumper (center radius 100mm) hits wall or boundary
+  const robotRadius = 95;
+
+  // Boundary check
+  if (Math.abs(nx) >= 950 - robotRadius || Math.abs(ny) >= 950 - robotRadius) {
+    return true;
+  }
+
+  // Inner walls collision
+  for (const w of STATE.walls) {
+    // Distance from point (nx, ny) to segment (w.x1, w.y1)-(w.x2, w.y2)
+    const px = w.x2 - w.x1;
+    const py = w.y2 - w.y1;
+    const l2 = px * px + py * py;
+    let t = ((nx - w.x1) * px + (ny - w.y1) * py) / l2;
+    t = Math.max(0, Math.min(1, t));
+    const closestX = w.x1 + t * px;
+    const closestY = w.y1 + t * py;
+    const dist = Math.hypot(nx - closestX, ny - closestY);
+    if (dist < robotRadius) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function detectDownColor() {
+  const rx = STATE.robot.x;
+  const ry = STATE.robot.y;
+  for (const d of STATE.disks) {
+    if (Math.hypot(d.x - rx, d.y - ry) <= d.radius + 30) {
+      return d.name;
+    }
+  }
+  return 'NONE';
+}
+
+function updateMagnetDisks() {
+  if (STATE.robot.magnetEnergized) {
+    if (!STATE.robot.pickedDisk) {
+      // Look for nearby disk within 120mm
+      for (const d of STATE.disks) {
+        if (Math.hypot(d.x - STATE.robot.x, d.y - STATE.robot.y) < 130) {
+          STATE.robot.pickedDisk = d;
+          appendConsole(`🧲 التقط المغناطيس قرص ${d.name}`, 'info');
+          break;
+        }
+      }
+    }
+    // If holding a disk, drag it along with robot front
+    if (STATE.robot.pickedDisk) {
+      const rad = degToRad(STATE.robot.angle);
+      STATE.robot.pickedDisk.x = STATE.robot.x + Math.cos(rad) * 90;
+      STATE.robot.pickedDisk.y = STATE.robot.y + Math.sin(rad) * 90;
+    }
+  } else {
+    STATE.robot.pickedDisk = null;
+  }
+}
+
+/* =========================================================================
+   Asynchronous VEX VR Robot API
+   Allows natural Python-like async/await commands with smooth animations.
+   ========================================================================= */
+const sleep = (ms) => new Promise((resolve, reject) => {
+  if (!STATE.isRunning) return reject(new Error('STOPPED'));
+  const timer = setTimeout(resolve, ms / STATE.speedMultiplier);
+  STATE.abortController = () => {
+    clearTimeout(timer);
+    reject(new Error('STOPPED'));
+  };
+});
+
+const drivetrain = {
+  set_drive_velocity: (velocity, unit = PERCENT) => {
+    STATE.robot.driveVelocity = Math.max(5, Math.min(100, velocity));
+  },
+  set_turn_velocity: (velocity, unit = PERCENT) => {
+    STATE.robot.turnVelocity = Math.max(5, Math.min(100, velocity));
+  },
+  drive: (direction = FORWARD) => {
+    STATE.robot.drivingContinuous = (direction === FORWARD) ? 1 : -1;
+  },
+  stop: () => {
+    STATE.robot.drivingContinuous = 0;
+  },
+  drive_for: async (direction, distance, unit = MM) => {
+    if (unit === INCHES) distance *= 25.4;
+    const sign = (direction === FORWARD) ? 1 : -1;
+    const totalDist = Math.abs(distance);
+    let traveled = 0;
+    const stepSize = 8; // mm per tick
+
+    while (traveled < totalDist) {
+      if (!STATE.isRunning) break;
+      const step = Math.min(stepSize, totalDist - traveled);
+      const rad = degToRad(STATE.robot.angle);
+      const nx = STATE.robot.x + Math.cos(rad) * step * sign;
+      const ny = STATE.robot.y + Math.sin(rad) * step * sign;
+
+      if (checkCollision(nx, ny)) {
+        STATE.robot.bumperPressed = true;
+        updateSensorsHUD();
+        render();
+        appendConsole('⚠️ تحذير: اصطدام بالجدار! توقف المحرك.', 'warn');
+        break;
+      } else {
+        STATE.robot.bumperPressed = false;
+      }
+
+      // Record pen trail if active
+      if (STATE.robot.penDown) {
+        STATE.lines.push({
+          x1: STATE.robot.x,
+          y1: STATE.robot.y,
+          x2: nx,
+          y2: ny,
+          color: STATE.robot.penColor,
+          width: STATE.robot.penWidth
+        });
+      }
+
+      STATE.robot.x = nx;
+      STATE.robot.y = ny;
+      traveled += step;
+      updateMagnetDisks();
+      updateSensorsHUD();
+      render();
+
+      await sleep(14);
+    }
+  },
+  turn_for: async (direction, angle, unit = DEGREES) => {
+    const sign = (direction === RIGHT) ? -1 : 1; // Standard VEX: Right is clockwise (-angle in deg)
+    const totalAngle = Math.abs(angle);
+    let turned = 0;
+    const stepDeg = 4; // degrees per tick
+
+    while (turned < totalAngle) {
+      if (!STATE.isRunning) break;
+      const step = Math.min(stepDeg, totalAngle - turned);
+      STATE.robot.angle = normalizeAngle(STATE.robot.angle + step * sign);
+      turned += step;
+
+      updateMagnetDisks();
+      updateSensorsHUD();
+      render();
+
+      await sleep(14);
+    }
+  }
+};
+
+const pen = {
+  move: (dir = DOWN) => {
+    STATE.robot.penDown = (dir === DOWN);
+    render();
+  },
+  set_pen_color: (color) => {
+    STATE.robot.penColor = color;
+  },
+  set_pen_width: (w) => {
+    STATE.robot.penWidth = w;
+  }
+};
+
+const magnet = {
+  energize: (mode = BOOST) => {
+    STATE.robot.magnetEnergized = (mode === BOOST);
+    updateMagnetDisks();
+    updateSensorsHUD();
+    render();
+  }
+};
+
+const distance = {
+  get_distance: (unit = MM) => {
+    const d = measureForwardDistance();
+    return unit === INCHES ? d / 25.4 : d;
+  },
+  found_object: () => {
+    return measureForwardDistance() < 1800;
+  }
+};
+
+const left_bumper = {
+  pressing: () => STATE.robot.bumperPressed
+};
+const right_bumper = {
+  pressing: () => STATE.robot.bumperPressed
+};
+
+const down_eye = {
+  detect: (color) => {
+    const current = detectDownColor();
+    if (color === RED) return current === 'RED';
+    if (color === BLUE) return current === 'BLUE';
+    if (color === GREEN) return current === 'GREEN';
+    return current !== 'NONE';
+  },
+  near_object: () => detectDownColor() !== 'NONE'
+};
+
+async function wait(duration, unit = SECONDS) {
+  const ms = (unit === SECONDS) ? duration * 1000 : duration;
+  await sleep(ms);
+}
+
+/* =========================================================================
+   Python Code Transpiler & Sandbox Runner
+   Translates standard VEX Python to asynchronous Javascript in-browser
+   ========================================================================= */
+function transpilePythonToJS(pyCode) {
+  const lines = pyCode.split('\n');
+  const jsLines = [];
+
+  for (let rawLine of lines) {
+    let line = rawLine;
+
+    // Handle indentation
+    const indentMatch = line.match(/^(\s*)/);
+    const indent = indentMatch ? indentMatch[1] : '';
+    let trimmed = line.trim();
+
+    // Remove comments
+    if (trimmed.startsWith('#') || trimmed.length === 0) {
+      jsLines.push(line);
+      continue;
+    }
+
+    // Replace print(...) with appendConsole
+    trimmed = trimmed.replace(/\bprint\s*\((.*)\)/g, 'appendConsole($1)');
+
+    // Replace pass
+    if (trimmed === 'pass') trimmed = '/* pass */';
+
+    // Replace True / False / None / and / or / not
+    trimmed = trimmed
+      .replace(/\bTrue\b/g, 'true')
+      .replace(/\bFalse\b/g, 'false')
+      .replace(/\bNone\b/g, 'null')
+      .replace(/\band\b/g, '&&')
+      .replace(/\bor\b/g, '||')
+      .replace(/\bnot\b/g, '!');
+
+    // Convert for i in range(n):
+    const forRangeMatch = trimmed.match(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\((.*?)\)\s*:/);
+    if (forRangeMatch) {
+      const varName = forRangeMatch[1];
+      const args = forRangeMatch[2].split(',').map(s => s.trim());
+      let init = `${varName} = 0`;
+      let cond = `${varName} < ${args[0]}`;
+      let step = `${varName}++`;
+
+      if (args.length === 2) {
+        init = `${varName} = ${args[0]}`;
+        cond = `${varName} < ${args[1]}`;
+        step = `${varName}++`;
+      } else if (args.length === 3) {
+        init = `${varName} = ${args[0]}`;
+        cond = `${varName} < ${args[1]}`;
+        step = `${varName} += ${args[2]}`;
+      }
+
+      jsLines.push(`${indent}for (let ${init}; ${cond}; ${step}) {`);
+      continue;
+    }
+
+    // Convert while condition:
+    const whileMatch = trimmed.match(/^while\s+(.*?)\s*:/);
+    if (whileMatch) {
+      const cond = whileMatch[1];
+      jsLines.push(`${indent}while (${cond}) {`);
+      // Add sleep to avoid infinite sync freeze
+      jsLines.push(`${indent}  await sleep(10);`);
+      continue;
+    }
+
+    // Convert if / elif / else:
+    const ifMatch = trimmed.match(/^if\s+(.*?)\s*:/);
+    if (ifMatch) {
+      jsLines.push(`${indent}if (${ifMatch[1]}) {`);
+      continue;
+    }
+    const elifMatch = trimmed.match(/^elif\s+(.*?)\s*:/);
+    if (elifMatch) {
+      jsLines.push(`${indent}} else if (${elifMatch[1]}) {`);
+      continue;
+    }
+    if (trimmed === 'else:') {
+      jsLines.push(`${indent}} else {`);
+      continue;
+    }
+
+    // Convert def func():
+    const defMatch = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\)\s*:/);
+    if (defMatch) {
+      jsLines.push(`${indent}async function ${defMatch[1]}(${defMatch[2]}) {`);
+      continue;
+    }
+
+    // Prepend await for asynchronous functions
+    const asyncCalls = [
+      'drivetrain.drive_for',
+      'drivetrain.turn_for',
+      'wait'
+    ];
+    for (const fn of asyncCalls) {
+      const regex = new RegExp(`(?<!await\\s+)${fn.replace('.', '\\.')}\\s*\\(`, 'g');
+      trimmed = trimmed.replace(regex, `await ${fn}(`);
+    }
+
+    jsLines.push(indent + trimmed + ';');
+  }
+
+  // Handle Python indentation close braces
+  const formatted = closePythonIndentationBlocks(jsLines);
+  return formatted;
+}
+
+function closePythonIndentationBlocks(lines) {
+  const result = [];
+  const indentStack = [0];
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    if (raw.trim().length === 0 || raw.trim().startsWith('//') || raw.trim().startsWith('#')) {
+      result.push(raw);
+      continue;
+    }
+
+    const currentIndent = raw.search(/\S/);
+
+    // If dedented, close open blocks
+    while (indentStack.length > 1 && currentIndent < indentStack[indentStack.length - 1]) {
+      const lastIndent = indentStack.pop();
+      result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
+    }
+
+    result.push(raw);
+
+    // If line opens block '{', track indent
+    if (raw.trim().endsWith('{')) {
+      indentStack.push(currentIndent + 4);
+    }
+  }
+
+  while (indentStack.length > 1) {
+    indentStack.pop();
+    result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
+  }
+
+  return result.join('\n');
+}
+
+/* =========================================================================
+   Execution Controller
+   ========================================================================= */
+async function startExecution() {
+  if (STATE.isRunning) return;
+
+  const code = editor.value.trim();
+  if (!code) {
+    appendConsole('يرجى كتابة كود بايثون أولاً!', 'warn');
+    return;
+  }
+
+  STATE.isRunning = true;
+  btnRun.disabled = true;
+  btnStop.disabled = false;
+  statusDot.className = 'dot running';
+  statusText.innerText = 'جاري التنفيذ...';
+
+  appendConsole('🚀 بدء تشغيل برنامج الروبوت...', 'info');
+
+  try {
+    const jsCode = transpilePythonToJS(code);
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+    // Wrap execution context
+    const runner = new AsyncFunction(
+      'drivetrain', 'pen', 'magnet', 'distance', 'left_bumper', 'right_bumper', 'down_eye',
+      'wait', 'appendConsole', 'sleep',
+      'FORWARD', 'REVERSE', 'RIGHT', 'LEFT', 'MM', 'INCHES', 'DEGREES', 'PERCENT', 'SECONDS', 'MSEC',
+      'DOWN', 'UP', 'BLACK', 'RED', 'GREEN', 'BLUE', 'BOOST', 'DROP',
+      `"use strict";\ntry {\n${jsCode}\n} catch(err) {\n  if(err.message !== "STOPPED") throw err;\n}`
+    );
+
+    await runner(
+      drivetrain, pen, magnet, distance, left_bumper, right_bumper, down_eye,
+      wait, appendConsole, sleep,
+      FORWARD, REVERSE, RIGHT, LEFT, MM, INCHES, DEGREES, PERCENT, SECONDS, MSEC,
+      DOWN, UP, BLACK, RED, GREEN, BLUE, BOOST, DROP
+    );
+
+    appendConsole('✅ اكتمل تنفيذ البرنامج بنجاح!', 'info');
+  } catch (err) {
+    if (err.message !== 'STOPPED') {
+      appendConsole(`❌ خطأ في التنفيذ: ${err.message}`, 'error');
+    }
+  } finally {
+    finishExecution();
+  }
+}
+
+function stopExecution() {
+  if (!STATE.isRunning) return;
+  STATE.isRunning = false;
+  if (STATE.abortController) {
+    STATE.abortController();
+    STATE.abortController = null;
+  }
+  drivetrain.stop();
+  appendConsole('⏹ تم إيقاف الروبوت يدوياً.', 'warn');
+  finishExecution();
+}
+
+function finishExecution() {
+  STATE.isRunning = false;
+  btnRun.disabled = false;
+  btnStop.disabled = true;
+  statusDot.className = 'dot stopped';
+  statusText.innerText = 'متوقف';
+  updateSensorsHUD();
+  render();
+}
+
+/* =========================================================================
+   Educational Preset Examples
+   ========================================================================= */
+const EXAMPLES = {
+  square: `# رسم مربع ملون باستخدام القلم والمحركات
+pen.set_pen_color(RED)
+pen.set_pen_width(5)
+pen.move(DOWN)
+
+for count in range(4):
+    drivetrain.drive_for(FORWARD, 300, MM)
+    drivetrain.turn_for(RIGHT, 90, DEGREES)
+
+pen.move(UP)
+print("تم الانتهاء من رسم المربع بنجاح!")
+`,
+
+  polygon: `# رسم نجمة / مضلع ثماني متداخل
+pen.set_pen_color(BLUE)
+pen.move(DOWN)
+
+for i in range(8):
+    drivetrain.drive_for(FORWARD, 220, MM)
+    drivetrain.turn_for(RIGHT, 135, DEGREES)
+
+pen.move(UP)
+print("تم رسم الشكل الهندسي!")
+`,
+
+  distance_stop: `# القيادة للأمام والتوقف الذاتي قبل الاصطدام
+print("الروبوت يتحرك للأمام...")
+drivetrain.set_drive_velocity(70, PERCENT)
+
+while distance.get_distance(MM) > 150:
+    drivetrain.drive_for(FORWARD, 20, MM)
+    current_dist = distance.get_distance(MM)
+    print("المسافة المتبقية للجدار: " + str(current_dist) + " mm")
+
+print("تم اكتشاف العائق! تم إيقاف الروبوت وتفادي الجدار.")
+drivetrain.turn_for(RIGHT, 90, DEGREES)
+`,
+
+  bumper_turn: `# تفادي العوائق بواسطة مستشعر الصدام (Bumper)
+pen.set_pen_color(GREEN)
+pen.move(DOWN)
+
+for attempt in range(5):
+    print("التحرك نحو الجدار...")
+    while not left_bumper.pressing():
+        drivetrain.drive_for(FORWARD, 40, MM)
+    
+    print("اصطدم الروبوت! الرجوع للخلف والدوران...")
+    drivetrain.drive_for(REVERSE, 120, MM)
+    drivetrain.turn_for(RIGHT, 90, DEGREES)
+
+print("انتهت جولة الاستكشاف!")
+`,
+
+  magnet_pickup: `# التقاط القرص الأول ونقله إلى نقطة البداية
+# (اختر ساحة "ملعب الأقراص والالتقاط")
+print("التحرك نحو القرص الأحمر في المنتصف...")
+drivetrain.drive_for(FORWARD, 700, MM)
+
+print("تشغيل المغناطيس لالتقاط القرص...")
+magnet.energize(BOOST)
+wait(1, SECONDS)
+
+print("سحب القرص والرجوع إلى الخلف...")
+drivetrain.drive_for(REVERSE, 700, MM)
+
+print("إفلات القرص في المنطقة المستهدفة.")
+magnet.energize(DROP)
+`,
+
+  color_detect: `# استشعار ألوان الأرضية والأقراص
+print("بدء مسح الساحة...")
+drivetrain.drive_for(FORWARD, 350, MM)
+
+if down_eye.detect(RED):
+    print("تم رصد لون أحمر! تفعيل القلم الأحمر.")
+    pen.set_pen_color(RED)
+elif down_eye.detect(BLUE):
+    print("تم رصد لون أزرق!")
+    pen.set_pen_color(BLUE)
+else:
+    print("لم يتم رصد قرص، المتابعة...")
+
+pen.move(DOWN)
+drivetrain.drive_for(FORWARD, 150, MM)
+pen.move(UP)
+`,
+
+  maze_solver: `# خوارزمية حل المتاهة بالالتفاف عند الجدران
+# (اختر ساحة "متاهة الجدران")
+print("بدء استكشاف المتاهة...")
+
+for step in range(12):
+    # إذا كان الطريق أمامنا سالكاً
+    if distance.get_distance(MM) > 250:
+        drivetrain.drive_for(FORWARD, 200, MM)
+    else:
+        # إذا واجهنا جداراً، نلتف لليمين
+        print("جدار في الواجهة! الالتفاف لليمين...")
+        drivetrain.turn_for(RIGHT, 90, DEGREES)
+`
+};
+
+function loadExample(key) {
+  if (!key || !EXAMPLES[key]) return;
+  stopExecution();
+
+  // Switch playground automatically based on example
+  if (key === 'magnet_pickup') {
+    document.getElementById('playgroundSelect').value = 'disk';
+    initPlayground('disk');
+  } else if (key === 'maze_solver') {
+    document.getElementById('playgroundSelect').value = 'maze';
+    initPlayground('maze');
+  } else if (key === 'polygon' || key === 'square') {
+    if (STATE.playgroundType !== 'art' && STATE.playgroundType !== 'grid') {
+      document.getElementById('playgroundSelect').value = 'grid';
+      initPlayground('grid');
+    }
+  }
+
+  editor.value = EXAMPLES[key];
+  updateLineNumbers();
+  appendConsole(`تم تحميل المثال: ${key}`, 'info');
+}
+
+// Initialize on Load
+window.addEventListener('DOMContentLoaded', () => {
+  initPlayground('grid');
+  loadExample('square');
+});
+</script>
+</body>
+</html>
+
