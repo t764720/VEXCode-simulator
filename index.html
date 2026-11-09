@@ -3,25 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>محاكي VEXcode VR التعليمي المتكامل (لبنات + كود) — بدون إنترنت</title>
+<title>محاكي VEXcode VR للكتل البرمجية (Blocks) — بدون إنترنت</title>
 <style>
 :root {
-  --bg-dark: #0f172a;
-  --panel-bg: #1e293b;
-  --line-color: #334155;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --bg-dark: #ffffff;
+  --panel-bg: #f1f5f9;
+  --line-color: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
   --primary: #38bdf8;
   --accent-green: #22c55e;
   --accent-red: #ef4444;
   --accent-yellow: #f59e0b;
-  --accent-purple: #a855f7;
   --drivetrain-color: #2563eb;
   --pen-color: #059669;
   --control-color: #d97706;
   --sensing-color: #0284c7;
   --magnet-color: #7c3aed;
-  --looks-color: #9333ea;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +42,11 @@ header {
   align-items: center;
   justify-content: space-between;
 }
-.brand-title { display: flex; align-items: center; gap: 10px; }
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .brand-badge {
   background: #dc2626;
   color: #fff;
@@ -54,9 +56,13 @@ header {
   border-radius: 4px;
   letter-spacing: 1px;
 }
-.brand-title h1 { font-size: 17px; font-weight: 700; color: #fff; }
+.brand-title h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
 .brand-title span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--accent-green);
   background: rgba(34, 197, 94, 0.15);
   padding: 2px 8px;
@@ -64,37 +70,11 @@ header {
   border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-/* Mode Switch Tabs */
-.mode-switch {
-  display: flex;
-  background: #0b1120;
-  border: 1px solid var(--line-color);
-  border-radius: 8px;
-  padding: 3px;
-  gap: 4px;
-}
-.mode-btn {
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.mode-btn.active {
-  background: var(--primary);
-  color: #0b1120;
-  font-weight: 700;
-}
-
-/* Toolbar */
+/* Controls Bar */
 .toolbar {
   background: var(--panel-bg);
   border-bottom: 1px solid var(--line-color);
-  padding: 8px 14px;
+  padding: 8px 16px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -104,7 +84,7 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 13px;
+  padding: 7px 14px;
   border-radius: 6px;
   border: none;
   font-size: 13px;
@@ -128,7 +108,7 @@ select {
   border: 1px solid var(--line-color);
   padding: 6px 10px;
   border-radius: 6px;
-  font-size: 12.5px;
+  font-size: 13px;
   outline: none;
   cursor: pointer;
 }
@@ -142,35 +122,103 @@ select {
 }
 .speed-wrapper input[type="range"] {
   accent-color: var(--primary);
-  width: 75px;
+  width: 80px;
   cursor: pointer;
 }
 
-/* Main Container */
+/* Layout */
 .workspace-container {
+  --toolbox-width: 280px;
+  --toolbox-height: 200px;
+  --program-width: 38%;
+  --program-height: 420px;
   display: flex;
+  direction: ltr;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
-/* Left: Toolbox for Blocks */
+/* Left/RTL Right: Block Toolbox */
 .toolbox-panel {
-  width: 250px;
+  width: var(--toolbox-width);
+  flex: 0 0 var(--toolbox-width);
   background: #0b1120;
-  border-left: 1px solid var(--line-color);
+  border-right: 1px solid var(--line-color);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
+  direction: rtl;
+}
+.toolbox-resizer {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--toolbox-width) - 4px);
+  width: 8px;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+}
+.program-resizer {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--toolbox-width) + var(--program-width) - 4px);
+  width: 8px;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+}
+.toolbox-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background: var(--line-color);
+  transition: background 0.15s ease, width 0.15s ease;
+}
+.program-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 2px;
+  background: var(--line-color);
+  transition: background 0.15s ease, width 0.15s ease;
+}
+.toolbox-resizer:hover::after,
+.toolbox-resizer:focus-visible::after,
+.toolbox-resizer.is-resizing::after,
+.program-resizer:hover::after,
+.program-resizer:focus-visible::after,
+.program-resizer.is-resizing::after {
+  width: 4px;
+  background: var(--primary);
+}
+.toolbox-resizer:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+.program-resizer:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
 }
 .toolbox-header {
   padding: 8px 12px;
   background: #131d31;
   border-bottom: 1px solid var(--line-color);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  display: flex;
-  justify-content: space-between;
 }
 .category-filter {
   display: flex;
@@ -182,7 +230,7 @@ select {
 }
 .cat-btn {
   font-size: 11px;
-  padding: 4px 7px;
+  padding: 4px 8px;
   border-radius: 4px;
   border: none;
   cursor: pointer;
@@ -195,86 +243,368 @@ select {
   color: #000;
   font-weight: bold;
 }
+
 .blocks-palette {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  scrollbar-gutter: stable;
+  scrollbar-color: #64748b #e2e8f0;
+  scrollbar-width: thin;
+}
+.blocks-palette::-webkit-scrollbar {
+  width: 12px;
+}
+.blocks-palette::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 6px;
+}
+.blocks-palette::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border: 3px solid #e2e8f0;
+  border-radius: 6px;
+}
+.blocks-palette::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
-/* Middle: Visual Workspace Dropzone & Text Editor */
-.editor-middle-panel {
-  flex: 1.15;
+/* Middle: Block Canvas / Workspace */
+.block-canvas-panel {
+  flex: 0 0 var(--program-width);
   background: #111827;
   border-left: 1px solid var(--line-color);
   display: flex;
   flex-direction: column;
-  min-width: 330px;
+  min-width: 320px;
   position: relative;
+  direction: rtl;
 }
 .workspace-header {
-  padding: 8px 12px;
+  padding: 8px 14px;
   background: #172033;
   border-bottom: 1px solid var(--line-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
+}
+.workspace-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.program-workspace {
+  display: flex;
+  flex: 1 1 100%;
+  min-height: 0;
+  overflow: hidden;
+  direction: ltr;
+}
+.program-workspace .workspace-dropzone {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+.console-toggle {
+  padding: 4px 8px;
+  border: 1px solid var(--line-color);
+  border-radius: 5px;
+  background: #0f172a;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+.console-toggle:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
 }
 .workspace-dropzone {
   flex: 1;
-  overflow-y: auto;
-  padding: 14px;
+  min-height: 0;
+  overflow-y: scroll;
+  direction: ltr;
+  padding: 16px 36px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   background: radial-gradient(#1e293b 1px, transparent 1px);
   background-size: 20px 20px;
+  scrollbar-gutter: stable;
+  scrollbar-width: none;
+}
+.workspace-dropzone::-webkit-scrollbar {
+  display: none;
+}
+.workspace-scrollbar {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  right: 6px;
+  bottom: 8px;
+  width: 16px;
+  border-radius: 8px;
+  background: #e2e8f0;
+  cursor: pointer;
+  touch-action: none;
+}
+.workspace-scroll-thumb {
+  position: absolute;
+  top: 0;
+  right: 3px;
+  left: 3px;
+  min-height: 32px;
+  background: #64748b;
+  border-radius: 6px;
+  cursor: grab;
+}
+.workspace-scroll-thumb:hover,
+.workspace-scrollbar:focus-visible .workspace-scroll-thumb {
+  background: #334155;
+}
+.workspace-scrollbar:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.workspace-scrollbar.is-dragging .workspace-scroll-thumb {
+  cursor: grabbing;
+  background: #334155;
+}
+.code-viewer {
+  display: flex;
+  flex: 0 0 48%;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--line-color);
+  background: #f8fafc;
+  direction: ltr;
+}
+.code-viewer[hidden] {
+  display: none;
+}
+.code-viewer-header {
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line-color);
+  background: #f1f5f9;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 700;
+  direction: rtl;
+}
+.code-viewer-content {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  color: #1e293b;
+  background: #f8fafc;
+  font: 12px/1.6 Consolas, "Courier New", monospace;
+  tab-size: 4;
+  white-space: pre;
+}
+.workspace-dropzone > * {
+  flex-shrink: 0;
+  direction: rtl;
 }
 .start-block {
   background: #15803d;
   color: white;
-  padding: 9px 14px;
+  padding: 7px 10px;
   border-radius: 8px 8px 0 0;
   font-weight: bold;
-  font-size: 13.5px;
+  font-size: 12px;
   width: fit-content;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  border: 2px solid #22c55e;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+  gap: 6px;
+  margin-bottom: 3px;
+  border: 1px solid #22c55e;
 }
 
-/* Block Cards */
+/* Individual Blocks Styling */
 .block-card {
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12.5px;
+  padding: 5px 7px;
+  border-radius: 7px;
+  font-size: 11px;
   font-weight: 600;
   color: #fff;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   user-select: none;
   cursor: grab;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.25);
-  border: 1px solid rgba(255,255,255,0.18);
-  transition: transform 0.15s ease;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
 }
-.block-card:hover { transform: translateY(-1px); }
-.block-card.dragging { opacity: 0.5; }
+.block-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px -1px rgba(0,0,0,0.35);
+}
+.blocks-palette .block-card {
+  max-width: 100%;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  line-height: 1.2;
+}
+.block-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
 
-.cat-drivetrain { background: #2563eb; }
-.cat-pen { background: #059669; }
-.cat-control { background: #d97706; }
-.cat-sensing { background: #0284c7; }
-.cat-magnet { background: #7c3aed; }
-.cat-looks { background: #9333ea; }
+/* Category Colors matching VEX Blocks */
+.cat-drivetrain { background: #2563eb; } /* Drive / Turn */
+.cat-pen { background: #059669; }        /* Pen Down / Color */
+.cat-control { background: #d97706; }    /* Repeat / Wait */
+.cat-sensing { background: #0284c7; }    /* Distance / Bumper */
+.cat-magnet { background: #7c3aed; }     /* Magnet Boost/Drop */
+.cat-looks { background: #9333ea; }      /* Print / Cursor / Looks */
+.cat-logic { background: #4f46e5; }
+.cat-math { background: #16a34a; }
+.cat-myblocks { background: #0f766e; }
+.cat-variables { background: #ca8a04; }
+
+/* C-Block / Container Block for Repeat (حاوية التكرار مثل سكراتش و VEX) */
+.c-block-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  background: rgba(217, 119, 6, 0.12);
+  border: 1px solid #d97706;
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 3px 0;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.25);
+  transition: all 0.2s ease;
+}
+.c-block-header {
+  background: #d97706;
+  color: #fff;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  font-weight: 600;
+  font-size: 11px;
+  user-select: none;
+}
+.condition-slot {
+  display: inline-flex;
+  align-items: center;
+  min-width: 150px;
+  min-height: 30px;
+  padding: 3px 6px;
+  border: 1px dashed #c7d2fe;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  vertical-align: middle;
+}
+.condition-slot:empty::after {
+  content: 'أفلت شرطًا هنا';
+  color: #eef2ff;
+  font-size: 10px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.condition-slot.drag-over {
+  background: rgba(255, 255, 255, 0.38);
+  border: 2px solid #fff;
+}
+.condition-slot .placed-block {
+  max-width: 100%;
+}
+.condition-slot .block-card {
+  padding: 3px 5px;
+  font-size: 10px;
+  box-shadow: none;
+}
+.condition-slot .block-field-num {
+  width: 40px;
+}
+.condition-slot .block-field-select,
+.cat-logic .block-field-select {
+  max-width: 62px;
+  padding-right: 3px;
+  padding-left: 3px;
+}
+.condition-slot .cat-logic {
+  flex-wrap: wrap;
+}
+.condition-slot .btn-del-block {
+  width: 18px;
+  height: 18px;
+}
+.c-block-body {
+  padding: 6px 6px 6px 12px; /* Indent from left/right */
+  min-height: 88px;
+  background: rgba(15, 23, 42, 0.45);
+  border-right: 3px solid #d97706; /* C-arm visual spine */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px dashed rgba(217, 119, 6, 0.4);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.c-block-body.drag-over {
+  background: rgba(245, 158, 11, 0.16);
+  box-shadow: inset 0 0 0 2px #fbbf24;
+}
+.c-block-body:empty::after {
+  content: '⬇️ أسقط اللبنة هنا لإضافتها إلى التكرار';
+  color: #fbbf24;
+  font-size: 12px;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  padding: 10px;
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px dashed #d97706;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.c-block-body.drag-over:empty::after {
+  background: rgba(245, 158, 11, 0.22);
+  border-color: #fbbf24;
+}
+.c-block-conditional {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: #2563eb;
+}
+.c-block-conditional > .c-block-header {
+  background: #2563eb;
+}
+.c-block-conditional > .c-block-body {
+  border-right-color: #2563eb;
+}
+.c-block-else-label {
+  padding: 3px 8px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+.c-block-else-body {
+  min-height: 68px;
+}
+.c-block-footer {
+  background: #b45309;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 8px;
+  user-select: none;
+}
 
 .block-field {
   background: #ffffff;
@@ -282,26 +612,59 @@ select {
   border: none;
   border-radius: 4px;
   font-weight: 700;
-  font-size: 12px;
-  padding: 2px 6px;
+  font-size: 10px;
+  padding: 1px 4px;
   outline: none;
   text-align: center;
 }
-.block-field-num { width: 50px; }
+.block-field-num { width: 44px; }
 .block-field-select { cursor: pointer; }
+.variable-reporters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+}
+.variable-reporter {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border: 1px solid #fb923c;
+  border-radius: 999px;
+  background: #f97316;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: grab;
+  user-select: none;
+}
+.variable-reporter:active { cursor: grabbing; }
+.variable-reporter.dragging { opacity: 0.55; }
+.block-field-num.variable-drop-target {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}
 
+/* Workspace Placed Block Container */
 .placed-block {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
-.placed-block .block-card { cursor: move; }
+.placed-block.c-block-container {
+  align-items: stretch;
+}
+.placed-block .block-card {
+  cursor: move;
+}
 .btn-del-block {
   background: #334155;
   color: #f87171;
   border: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -311,6 +674,7 @@ select {
 }
 .btn-del-block:hover { background: #ef4444; color: #fff; }
 
+/* Drag and Drop Over highlight */
 .drop-placeholder {
   height: 36px;
   border: 2px dashed #38bdf8;
@@ -318,101 +682,44 @@ select {
   background: rgba(56, 189, 248, 0.1);
   margin: 4px 0;
 }
+
+/* Active Highlight during Execution */
 .block-active-exec {
   outline: 3px solid #facc15 !important;
   box-shadow: 0 0 15px #facc15 !important;
 }
 
-/* Python Text Editor View (Optional Toggle) */
-.python-editor-view {
-  display: none;
-  flex: 1;
-  flex-direction: column;
-}
-.py-editor-wrapper {
-  flex: 1;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  background: #080d19;
-}
-.line-numbers {
-  width: 40px;
-  padding: 10px 6px;
-  background: #050811;
-  color: #475569;
-  text-align: right;
-  font-family: Consolas, monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  user-select: none;
-  overflow: hidden;
-  border-right: 1px solid #1e293b;
-}
-#codeEditor {
-  flex: 1;
-  background: transparent;
-  color: #f1f5f9;
-  border: none;
-  outline: none;
-  padding: 10px;
-  font-family: Consolas, monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  resize: none;
-  tab-size: 4;
-  white-space: pre;
-  overflow: auto;
-  direction: ltr;
-  text-align: left;
-}
-
-/* Console Drawer */
-.console-drawer {
-  height: 125px;
-  background: #060a14;
-  border-top: 1px solid var(--line-color);
-  padding: 8px 12px;
-  overflow-y: auto;
-  font-family: Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #93c5fd;
-  direction: ltr;
-  text-align: left;
-}
-.log-err { color: #f87171 !important; }
-.log-info { color: #34d399 !important; }
-.log-warn { color: #fbbf24 !important; }
-
-/* Right: Simulator Arena & HUD */
+/* Right: Simulator & HUD */
 .sim-panel {
-  flex: 1.25;
+  flex: 1;
   display: flex;
   flex-direction: column;
   background: #111827;
   position: relative;
+  min-width: 320px;
+  direction: rtl;
 }
 .hud-bar {
   background: #1f2937;
   border-bottom: 1px solid var(--line-color);
-  padding: 7px 10px;
+  padding: 4px 8px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-  gap: 6px;
-  font-size: 11px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  font-size: 10px;
 }
 .hud-item {
   background: #111827;
   border: 1px solid #374151;
-  border-radius: 6px;
-  padding: 4px 6px;
+  border-radius: 5px;
+  padding: 3px 6px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
+  min-width: 0;
 }
-.hud-label { color: var(--text-muted); font-size: 9.5px; }
-.hud-val { font-family: Consolas, monospace; font-weight: 700; color: #38bdf8; font-size: 11.5px; }
+.hud-label { color: var(--text-muted); font-size: 9px; line-height: 1.15; }
+.hud-val { font-family: Consolas, monospace; font-weight: 700; color: #38bdf8; font-size: 11px; line-height: 1.2; }
 
 .canvas-wrapper {
   flex: 1;
@@ -420,19 +727,26 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+pen_move  overflow: hidden;
   background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
 }
 #vrCanvas {
+  display: block;
+  width: min(100%, 560px);
+  max-height: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
   background: #f8fafc;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   border-radius: 4px;
 }
 
+/* Status indicator badge */
 .status-pill {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  left: 12px;
   padding: 4px 10px;
   border-radius: 20px;
   font-size: 11px;
@@ -450,91 +764,205 @@ select {
 .dot.running { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 .dot.stopped { background: #ef4444; }
 
-/* Camera / View Controls overlay on Canvas */
-.view-overlay-controls {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
+/* Console / Log drawer at bottom of workspace */
+.console-drawer {
+  flex: 0 0 220px;
+  background: #080d1a;
+  border-top: 1px solid var(--line-color);
   display: flex;
-  gap: 6px;
-  z-index: 10;
+  min-height: 0;
+  overflow: hidden;
+  color: #93c5fd;
+  direction: ltr;
 }
-.btn-icon {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid var(--line-color);
-  color: #f1f5f9;
-  padding: 5px 9px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 11px;
+.console-drawer[hidden] { display: none; }
+.console-log {
+  flex: 1 1 52%;
+  min-width: 0;
+  padding: 8px 12px;
+  overflow: auto;
+  font: 12px/1.4 Consolas, monospace;
+  color: #334155;
+  text-align: left;
 }
-.btn-icon:hover { background: #38bdf8; color: #000; }
+.console-log[hidden] { display: none; }
+.code-viewer-header {
+  padding: 6px 10px;
+}
+.code-viewer-content {
+  font-size: 13px;
+}
+.log-err { color: #f87171 !important; }
+.log-info { color: #34d399 !important; }
+.log-warn { color: #fbbf24 !important; }
+
+header {
+  background: #fff;
+  border-bottom-color: var(--line-color);
+}
+.brand-title h1 { color: var(--text-main); }
+.toolbar,
+.toolbox-panel,
+.block-canvas-panel,
+.sim-panel {
+  background: #fff;
+}
+.toolbox-header,
+.workspace-header,
+.category-filter,
+.hud-bar {
+  background: #f1f5f9;
+}
+.cat-btn,
+.hud-item,
+.console-toggle {
+  background: #fff;
+}
+.workspace-dropzone {
+  background: radial-gradient(#cbd5e1 1px, transparent 1px);
+}
+.c-block-body {
+  background: rgba(15, 23, 42, 0.04);
+}
+.canvas-wrapper {
+  background: #fff;
+}
+.console-drawer {
+  background: #fff;
+  color: #334155;
+}
+.status-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-main);
+}
+select {
+  background: #fff;
+  color: var(--text-main);
+}
 
 @media (max-width: 1050px) {
   .workspace-container { flex-direction: column-reverse; overflow-y: auto; }
-  .toolbox-panel { width: 100%; height: 210px; }
-  .sim-panel { min-height: 480px; }
+  .toolbox-panel {
+    width: 100%;
+    height: var(--toolbox-height);
+    flex-basis: var(--toolbox-height);
+  }
+  .toolbox-resizer {
+    top: auto;
+    right: 0;
+    bottom: calc(var(--toolbox-height) - 4px);
+    left: 0;
+    width: auto;
+    height: 8px;
+    cursor: row-resize;
+  }
+  .block-canvas-panel {
+    flex: 0 0 var(--program-height);
+    min-height: 320px;
+  }
+  .sim-panel {
+    flex: 1 0 460px;
+  }
+  .program-resizer {
+    top: auto;
+    right: 0;
+    bottom: calc(var(--toolbox-height) + var(--program-height) - 4px);
+    left: 0;
+    width: auto;
+    height: 8px;
+    cursor: row-resize;
+  }
+  .toolbox-resizer::after {
+    top: 3px;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: auto;
+    height: 2px;
+  }
+  .program-resizer::after {
+    top: 3px;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: auto;
+    height: 2px;
+  }
+  .toolbox-resizer:hover::after,
+  .toolbox-resizer:focus-visible::after,
+  .toolbox-resizer.is-resizing::after,
+  .program-resizer:hover::after,
+  .program-resizer:focus-visible::after,
+  .program-resizer.is-resizing::after {
+    width: auto;
+    height: 4px;
+  }
+  .sim-panel { min-height: 460px; }
   body { overflow: auto; }
+}
+@media (max-width: 560px) {
+  .hud-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 </style>
 </head>
 <body>
 
 <!-- Header -->
-<header>
+<!-- <header>
   <div class="brand-title">
-    <div class="brand-badge">VEX VR</div>
-    <h1>محاكي VEXcode VR التعليمي المتكامل</h1>
-    <span>بدون إنترنت ⚡</span>
+    <div class="brand-badge">VEX BLOCKS</div>
+    <h1>محاكي VEX VR بالسحب والإفلات (Visual Blocks)</h1>
+    <span>يعمل بدون إنترنت 100% ⚡</span>
   </div>
-
-  <!-- Switch between Blocks & Python mode -->
-  <div class="mode-switch">
-    <button id="btnModeBlocks" class="mode-btn active" onclick="switchMode('blocks')">🧩 اللبنات (Blocks)</button>
-    <button id="btnModePython" class="mode-btn" onclick="switchMode('python')">🐍 بايثون (Python)</button>
-  </div>
-
   <div>
-    <button class="btn btn-clear" onclick="exportBlocksOrCode()">💾 تصدير</button>
-    <button class="btn btn-clear" onclick="openHelpDialog()">📖 مساعدة</button>
+    <button class="btn btn-clear" onclick="openBlocksHelp()">📖 شرح اللبنات</button>
   </div>
-</header>
+</header> -->
 
 <!-- Main Toolbar -->
 <div class="toolbar">
-  <button id="btnRun" class="btn btn-run" onclick="startExecution()">
-    ▶ تشغيل
+  <button id="btnRun" class="btn btn-run" onclick="runBlocksProgram()">
+    ▶ تشغيل اللبنات
   </button>
   <button id="btnStop" class="btn btn-stop" onclick="stopExecution()" disabled>
     ⏹ إيقاف
   </button>
   <button class="btn btn-reset" onclick="resetPlayground()">
-    🔄 إعادة تعيين الساحة
+    🔄 إعادة تعيين الملعب
   </button>
-  <button id="btnClear" class="btn btn-clear" onclick="clearActiveWorkspace()">
-    🗑 مسح
+  <button class="btn btn-clear" onclick="clearWorkspace()">
+    🗑 مسح اللبنات
   </button>
+  <button class="btn btn-reset" type="button" onclick="saveProjectFile()">💾 حفظ المشروع</button>
+  <button class="btn btn-reset" type="button" onclick="document.getElementById('projectFileInput').click()">📂 فتح المشروع</button>
+  <input id="projectFileInput" type="file" accept=".json,application/json" hidden>
 
-  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted)">
+  <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)">
     <label>الساحة:</label>
     <select id="playgroundSelect" onchange="changePlayground(this.value)">
       <option value="grid">ساحة الرسم الشبكية (Grid Map)</option>
+      <option value="grid_corner">ساحة الرسم الشبكية (-900, -900)</option>
       <option value="art">لوحة الرسم الفنية (Art Canvas)</option>
       <option value="disk">ملعب الأقراص والالتقاط (Disk Transport)</option>
       <option value="maze">متاهة الجدران (Wall Maze)</option>
     </select>
   </div>
 
-  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-muted)">
+  <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)">
     <label>أمثلة جاهزة:</label>
-    <select id="exampleSelect" onchange="loadPresetExample(this.value)">
-      <option value="">-- اختر تطبيقاً تعليمياً --</option>
-      <option value="square">1. رسم مربع ملون (حلقة تكرار)</option>
-      <option value="polygon">2. رسم نجمة ومضلع هندسي</option>
-      <option value="avoid_distance">3. مستشعر المسافة والتوقف الذكي</option>
-      <option value="bumper_bounce">4. مستشعر الصدام والارتداد</option>
-      <option value="pickup_disk">5. المغناطيس ونقل الأقراص</option>
-      <option value="maze_navigation">6. حل المتاهة بالمحاذاة</option>
+    <select id="exampleSelect" onchange="loadBlocksPreset(this.value)">
+      <option value="">-- أمثلة برمجية باللبنات --</option>
+      <option value="square">1. رسم مربع ملون (كرر 4 مرات)</option>
+      <option value="circle_art">2. رسم نجمة ومضلع فني</option>
+      <option value="drive_stop">3. تحرك للأمام وتوقف قبل الجدار</option>
+      <option value="magnet_disk">4. التقاط القرص بالمغناطيس ونقله</option>
+      <option value="avoid_wall">5. استشعار الصدام والارتداد</option>
+      <option value="drive_to_y">6. تحرك حتى موضع Y ثم توقف</option>
+      <option value="eye_object">7. التوقف عند رؤية كائن</option>
+      <option value="eye_color">8. التوقف عند رؤية قرص أحمر</option>
+      <option value="bumper_if">9. إذا اصطدم الروبوت فارتد وإلا استدر</option>
+      <option value="another_square">10. إنشاء مربع آخر مع تصفير زاوية الرأس</option>
+      <option value="counter_octagon">11. رسم مثمن وتغيير اللون باستخدام المتغيرات</option>
     </select>
   </div>
 
@@ -545,14 +973,12 @@ select {
   </div>
 </div>
 
-<!-- Main Workspace Container -->
+<!-- Main Workspace -->
 <div class="workspace-container">
 
-  <!-- 1. Left Toolbox (Visible in Blocks Mode) -->
-  <div class="toolbox-panel" id="toolboxPanel">
-    <div class="toolbox-header">
-      <span>مكتبة اللبنات البرمجية</span>
-    </div>
+  <!-- 1. Left: Toolbox of Drag-and-Drop Blocks -->
+  <div class="toolbox-panel">
+    <div class="toolbox-header">مكتبة اللبنات البرمجية</div>
     
     <div class="category-filter">
       <button class="cat-btn active" onclick="filterBlocks('all', this)">الكل</button>
@@ -562,10 +988,14 @@ select {
       <button class="cat-btn" onclick="filterBlocks('sensing', this)">الحساسات</button>
       <button class="cat-btn" onclick="filterBlocks('magnet', this)">المغناطيس</button>
       <button class="cat-btn" onclick="filterBlocks('looks', this)">وحدة التحكم / المخرجات</button>
+      <button class="cat-btn" onclick="filterBlocks('logic', this)">المنطق</button>
+      <button class="cat-btn" onclick="filterBlocks('math', this)">الحساب</button>
+      <button class="cat-btn" onclick="filterBlocks('variables', this)">المتغيرات</button>
+      <button class="cat-btn" onclick="filterBlocks('myblocks', this)">كتلي الخاصة</button>
     </div>
 
     <div class="blocks-palette" id="blocksPalette">
-      <!-- Drivetrain -->
+      <!-- Drivetrain Blocks -->
       <div class="block-card cat-drivetrain" draggable="true" data-type="drive_for">
         <span>تحرك</span>
         <select class="block-field block-field-select" data-field="dir">
@@ -573,8 +1003,20 @@ select {
           <option value="REVERSE">للخلف</option>
         </select>
         <span>مسافة</span>
-        <input type="number" class="block-field block-field-num" value="200" data-field="dist">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="200" data-field="dist">
         <span>ملم</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="drive_forward">
+        <span>تحرك للأمام باستمرار حتى الاصطدام</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="drive_start">
+        <span>تحرك للأمام</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="drive_stop">
+        <span>أوقف القيادة</span>
       </div>
 
       <div class="block-card cat-drivetrain" draggable="true" data-type="turn_for">
@@ -584,19 +1026,31 @@ select {
           <option value="LEFT">لليسار</option>
         </select>
         <span>بزاوية</span>
-        <input type="number" class="block-field block-field-num" value="90" data-field="angle">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="90" data-field="angle">
         <span>درجة</span>
       </div>
 
       <div class="block-card cat-drivetrain" draggable="true" data-type="set_speed">
-        <span>اضبط السرعة إلى</span>
-        <input type="number" class="block-field block-field-num" value="80" data-field="speed">
+        <span>اضبط سرعة القيادة إلى</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="80" data-field="speed">
         <span>%</span>
       </div>
 
-      <!-- Pen -->
+      <div class="block-card cat-drivetrain" draggable="true" data-type="set_turn_speed">
+        <span>اضبط سرعة الالتفاف إلى</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="60" data-field="speed">
+        <span>%</span>
+      </div>
+
+      <div class="block-card cat-drivetrain" draggable="true" data-type="set_heading">
+        <span>اضبط زاوية المواجهة إلى</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="0" data-field="heading">
+        <span>درجة</span>
+      </div>
+
+      <!-- Pen Blocks -->
       <div class="block-card cat-pen" draggable="true" data-type="pen_move">
-        <span>اجعل القلم</span>
+        <span>حرك القلم </span>
         <select class="block-field block-field-select" data-field="action">
           <option value="DOWN">للأسفل (رسم)</option>
           <option value="UP">للأعلى (رفع)</option>
@@ -604,7 +1058,7 @@ select {
       </div>
 
       <div class="block-card cat-pen" draggable="true" data-type="pen_color">
-        <span>لون القلم:</span>
+        <span>اضبط لون القلم إلى</span>
         <select class="block-field block-field-select" data-field="color">
           <option value="#ef4444">الأحمر</option>
           <option value="#3b82f6">الأزرق</option>
@@ -613,23 +1067,163 @@ select {
         </select>
       </div>
 
-      <!-- Control -->
+      <div class="block-card cat-pen" draggable="true" data-type="pen_width">
+        <span>اضبط عرض القلم إلى</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="4" data-field="width">
+        <span>ملم</span>
+      </div>
+
+      <!-- Control Blocks -->
       <div class="block-card cat-control" draggable="true" data-type="repeat_times">
-        <span>كرر</span>
+        <span>🔁 كرر</span>
         <input type="number" class="block-field block-field-num" value="4" data-field="times">
-        <span>مرات: (اللبنات التالية)</span>
+        <span>مرات [حاوية اللبنات]</span>
+      </div>
+
+      <div class="block-card cat-control" draggable="true" data-type="repeat_forever">
+        <span>🔁 كرر إلى الأبد [حاوية اللبنات]</span>
       </div>
 
       <div class="block-card cat-control" draggable="true" data-type="wait_sec">
         <span>انتظر</span>
-        <input type="number" class="block-field block-field-num" value="1" data-field="sec">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="1" data-field="sec">
         <span>ثانية</span>
       </div>
 
-      <!-- Sensing -->
+      <div class="block-card cat-control" draggable="true" data-type="wait_until">
+        <span>انتظر حتى</span>
+        <span class="condition-slot-preview">أضف مقارنة</span>
+      </div>
+
+      <div class="block-card cat-control" draggable="true" data-type="repeat_until">
+        <span>كرر حتى</span>
+        <span class="condition-slot-preview">أضف مقارنة</span>
+        <span>ثم نفّذ اللبنات بالداخل</span>
+      </div>
+
+      <div class="block-card cat-control" draggable="true" data-type="if_then">
+        <span>إذا</span>
+        <span class="condition-slot-preview">أضف شرطًا</span>
+        <span>فنفّذ</span>
+      </div>
+
+      <div class="block-card cat-control" draggable="true" data-type="if_else">
+        <span>إذا</span>
+        <span class="condition-slot-preview">أضف شرطًا</span>
+        <span>فنفّذ وإلا</span>
+      </div>
+
+      <div class="block-card cat-logic" draggable="true" data-type="compare">
+        <select class="block-field block-field-select" data-field="left-source" aria-label="مصدر القيمة الأولى">
+          <option value="value">قيمة</option>
+          <option value="x">X</option>
+          <option value="y">Y</option>
+          <option value="distance">مسافة</option>
+          <option value="heading">زاوية</option>
+          <option value="variable">متغير</option>
+        </select>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="0" data-field="left" aria-label="القيمة الأولى">
+        <input type="text" class="block-field" value="counter" data-field="left-variable" aria-label="اسم المتغير الأول" style="width:60px" hidden>
+        <select class="block-field block-field-select" data-field="operator" aria-label="عملية المقارنة">
+          <option value="lt">&lt;</option>
+          <option value="lte">≤</option>
+          <option value="eq">=</option>
+          <option value="neq">≠</option>
+          <option value="gte">≥</option>
+          <option value="gt">&gt;</option>
+        </select>
+        <select class="block-field block-field-select" data-field="right-source" aria-label="مصدر القيمة الثانية">
+          <option value="value">قيمة</option>
+          <option value="x">X</option>
+          <option value="y">Y</option>
+          <option value="distance">مسافة</option>
+          <option value="heading">زاوية</option>
+          <option value="variable">متغير</option>
+        </select>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="10" data-field="right" aria-label="القيمة الثانية">
+        <input type="text" class="block-field" value="counter" data-field="right-variable" aria-label="اسم المتغير الثاني" style="width:60px" hidden>
+      </div>
+
+      <div class="block-card cat-logic" draggable="true" data-type="logic_and">
+        <span>و</span>
+        <span class="condition-slot-preview">شرط أول</span>
+        <span>و</span>
+        <span class="condition-slot-preview">شرط ثانٍ</span>
+      </div>
+
+      <div class="block-card cat-logic" draggable="true" data-type="logic_or">
+        <span>أو</span>
+        <span class="condition-slot-preview">شرط أول</span>
+        <span>أو</span>
+        <span class="condition-slot-preview">شرط ثانٍ</span>
+      </div>
+
+      <div class="block-card cat-logic" draggable="true" data-type="logic_not">
+        <span>ليس</span>
+        <span class="condition-slot-preview">أضف شرطًا</span>
+      </div>
+
+      <div class="block-card cat-math" draggable="true" data-type="math_multiply" title="اسحب الناتج إلى خانة قيمة">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="2" data-field="left" aria-label="القيمة الأولى">
+        <span>×</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="3" data-field="right" aria-label="القيمة الثانية">
+      </div>
+      <div class="block-card cat-math" draggable="true" data-type="math_add" title="اسحب الناتج إلى خانة قيمة">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="2" data-field="left" aria-label="القيمة الأولى">
+        <span>+</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="3" data-field="right" aria-label="القيمة الثانية">
+      </div>
+      <div class="block-card cat-math" draggable="true" data-type="math_divide" title="اسحب الناتج إلى خانة قيمة">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="6" data-field="left" aria-label="القيمة الأولى">
+        <span>÷</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="2" data-field="right" aria-label="القيمة الثانية">
+      </div>
+      <div class="block-card cat-math" draggable="true" data-type="math_remainder" title="اسحب الناتج إلى خانة قيمة">
+        <span>الباقي من</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="0" data-field="left" aria-label="المقسوم">
+        <span>/</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="0" data-field="right" aria-label="المقسوم عليه">
+      </div>
+      <div class="block-card cat-math" draggable="true" data-type="math_subtract" title="اسحب الناتج إلى خانة قيمة">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="5" data-field="left" aria-label="القيمة الأولى">
+        <span>−</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="2" data-field="right" aria-label="القيمة الثانية">
+      </div>
+
+      <!-- Sensing & Condition Blocks -->
+      <div class="block-card cat-sensing" draggable="true" data-type="eye_near">
+        <select class="block-field block-field-select" data-field="sensor" aria-label="مستشعر العين">
+          <option value="front">العين الأمامية</option>
+          <option value="down">العين السفلية</option>
+        </select>
+        <span>يرى كائنًا قريبًا؟</span>
+      </div>
+
+      <div class="block-card cat-sensing" draggable="true" data-type="eye_color">
+        <select class="block-field block-field-select" data-field="sensor" aria-label="مستشعر العين">
+          <option value="front">العين الأمامية</option>
+          <option value="down">العين السفلية</option>
+        </select>
+        <span>يرى اللون</span>
+        <select class="block-field block-field-select" data-field="color" aria-label="اللون">
+          <option value="red">الأحمر</option>
+          <option value="green">الأخضر</option>
+          <option value="blue">الأزرق</option>
+        </select>
+        <span>؟</span>
+      </div>
+
+      <div class="block-card cat-sensing" draggable="true" data-type="bumper_pressed">
+        <select class="block-field block-field-select" data-field="side" aria-label="مستشعر الصدام">
+          <option value="left">الصدام الأيسر</option>
+          <option value="right">الصدام الأيمن</option>
+        </select>
+        <span>مضغوط؟</span>
+      </div>
+
       <div class="block-card cat-sensing" draggable="true" data-type="drive_until_obstacle">
         <span>تحرك للأمام حتى يقترب الجدار لمسافة</span>
-        <input type="number" class="block-field block-field-num" value="150" data-field="dist">
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="150" data-field="dist">
         <span>ملم</span>
       </div>
 
@@ -637,7 +1231,7 @@ select {
         <span>تحرك للأمام حتى يلمس الصدام الجدار</span>
       </div>
 
-      <!-- Magnet -->
+      <!-- Magnet Block -->
       <div class="block-card cat-magnet" draggable="true" data-type="magnet_action">
         <span>المغناطيس:</span>
         <select class="block-field block-field-select" data-field="action">
@@ -646,10 +1240,10 @@ select {
         </select>
       </div>
 
-      <!-- Looks / Print -->
+      <!-- Looks / Console Control Blocks (وحدة التحكم) -->
       <div class="block-card cat-looks" draggable="true" data-type="print_msg">
         <span>طباعة</span>
-        <input type="text" class="block-field" style="width:130px; text-align:right; direction:rtl;" value="مرحباً بالروبوت!" data-field="msg">
+        <input type="text" class="block-field" style="width:130px; text-align:right; direction:rtl;" value="مرحباً بالعالم" data-field="msg">
       </div>
 
       <div class="block-card cat-looks" draggable="true" data-type="set_cursor_next_row">
@@ -659,51 +1253,124 @@ select {
       <div class="block-card cat-looks" draggable="true" data-type="clear_console">
         <span>مسح وحدة التحكم</span>
       </div>
-    </div>
-  </div>
 
-  <!-- 2. Middle Panel: Can toggle between Blocks Dropzone and Python Code Editor -->
-  <div class="editor-middle-panel">
-    
-    <!-- Blocks Dropzone View -->
-    <div id="blocksView" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
-      <div class="workspace-header">
-        <span>مساحة ترتيب اللبنات (اسحب من اليمين وأفلت هنا 👇)</span>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <span style="font-size:11px; color:#38bdf8" id="blockCount">عدد اللبنات: 0</span>
-          <button class="btn btn-clear" style="padding:2px 8px; font-size:11px;" onclick="convertBlocksToPython()">توليد بايثون ➔</button>
-        </div>
+      <div class="block-card cat-variables" draggable="true" data-type="set_variable">
+        <span>اجعل المتغير</span>
+        <input type="text" class="block-field" value="counter" data-field="name" aria-label="اسم المتغير" style="width:72px">
+        <span>=</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="0" data-field="value">
       </div>
 
+      <div class="block-card cat-variables" draggable="true" data-type="change_variable">
+        <span>غيّر المتغير</span>
+        <input type="text" class="block-field" value="counter" data-field="name" aria-label="اسم المتغير" style="width:72px">
+        <span>بمقدار</span>
+        <input type="text" inputmode="decimal" class="block-field block-field-num" value="1" data-field="value">
+      </div>
+      <div class="variable-reporters" id="variableReporters" aria-label="متغيرات قابلة للسحب"></div>
+
+      <div class="block-card cat-myblocks" draggable="true" data-type="custom_define">
+        <span>عرّف كتلة</span>
+        <input type="text" class="block-field" value="step" data-field="name" aria-label="اسم الكتلة" style="width:72px">
+        <span>المدخلات</span>
+        <input type="text" class="block-field" value="distance" data-field="params" aria-label="معاملات الكتلة" style="width:90px">
+      </div>
+
+      <div class="block-card cat-myblocks" draggable="true" data-type="custom_call">
+        <span>نفّذ كتلة</span>
+        <input type="text" class="block-field" value="step" data-field="name" aria-label="اسم الكتلة" style="width:72px">
+        <span>بالقيم</span>
+        <input type="text" class="block-field" value="200" data-field="args" aria-label="قيم المعاملات" style="width:90px">
+      </div>
+    </div>
+  </div>
+  <button
+    type="button"
+    class="toolbox-resizer"
+    id="toolboxResizer"
+    role="separator"
+    aria-label="تغيير حجم مكتبة اللبنات"
+    aria-orientation="vertical"
+    aria-valuemin="220"
+    aria-valuemax="420"
+    aria-valuenow="280"
+    title="اسحب لتغيير حجم مكتبة اللبنات"
+  ></button>
+
+  <!-- 2. Middle: Visual Dropzone / Workspace -->
+  <div class="block-canvas-panel">
+    <div class="workspace-header">
+      <span>مساحة ترتيب اللبنات البرمجية (اسحب اللبنات هنا 👇)</span>
+      <div class="workspace-header-actions">
+        <span style="font-size:11px;color:#38bdf8" id="blockCount">عدد اللبنات: 0</span>
+        <button
+          type="button"
+          class="console-toggle"
+          id="codeViewerToggle"
+          aria-controls="codeViewer"
+          aria-expanded="true"
+        >إخفاء عارض الكود</button>
+        <button
+          type="button"
+          class="console-toggle"
+          id="consoleToggle"
+          aria-controls="consoleOutput"
+          aria-expanded="true"
+        >إخفاء منطقة الطباعة</button>
+      </div>
+    </div>
+
+    <div class="program-workspace">
       <div class="workspace-dropzone" id="workspaceDropzone">
         <div class="start-block">
           <span>🚩</span>
           <span>عند بدء التشغيل (When Started)</span>
         </div>
+        <!-- Placed blocks will be appended here dynamically -->
+        <div
+          class="workspace-scrollbar"
+          id="workspaceScrollbar"
+          role="scrollbar"
+          aria-label="تمرير مساحة ترتيب اللبنات"
+          aria-controls="workspaceDropzone"
+          aria-orientation="vertical"
+          aria-valuemin="0"
+          aria-valuemax="0"
+          aria-valuenow="0"
+          tabindex="0"
+        >
+          <div class="workspace-scroll-thumb" id="workspaceScrollThumb"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Python Code View -->
-    <div id="pythonView" class="python-editor-view">
-      <div class="workspace-header">
-        <span>محرر نصوص بايثون المباشر (VEX VR Python API)</span>
-        <span style="font-size:11px; color:#94a3b8">دعم الحلقات والشروط والأوامر</span>
-      </div>
-      <div class="py-editor-wrapper">
-        <div class="line-numbers" id="lineNumbers">1</div>
-        <textarea id="codeEditor" spellcheck="false" placeholder="# اكتب أوامر بايثون هنا..."></textarea>
-      </div>
+    <!-- Live execution log -->
+    <div class="console-drawer" id="consoleOutput">
+      <div class="console-log" id="consoleLog" role="log" aria-live="polite"></div>
+      <aside class="code-viewer" id="codeViewer" aria-label="عارض الكود بلغة Python">
+        <div class="code-viewer-header">معاينة الكود (Python)</div>
+        <pre class="code-viewer-content" id="generatedCode" aria-live="polite"></pre>
+      </aside>
     </div>
-
-    <!-- Common Console Drawer -->
-    <div class="console-drawer" id="consoleOutput"></div>
   </div>
+  <button
+    type="button"
+    class="program-resizer"
+    id="programResizer"
+    role="separator"
+    aria-label="تغيير حجم مساحة ترتيب اللبنات"
+    aria-orientation="vertical"
+    aria-valuemin="320"
+    aria-valuemax="840"
+    aria-valuenow="547"
+    title="اسحب لتغيير حجم مساحة ترتيب اللبنات"
+  ></button>
 
-  <!-- 3. Right Panel: 2D Simulation Arena & HUD -->
+  <!-- 3. Right: VEX Simulation Arena -->
   <div class="sim-panel">
     <div class="hud-bar">
       <div class="hud-item">
-        <span class="hud-label">الموقع (X, Y) ملم</span>
+        <span class="hud-label">الموضع (X, Y)</span>
         <span class="hud-val" id="hudPos">X: 0, Y: 0</span>
       </div>
       <div class="hud-item">
@@ -716,7 +1383,7 @@ select {
       </div>
       <div class="hud-item">
         <span class="hud-label">مستشعر الصدم</span>
-        <span class="hud-val" id="hudBumper">OFF</span>
+        <span class="hud-val" id="hudBumper">OFF (سليم)</span>
       </div>
       <div class="hud-item">
         <span class="hud-label">المغناطيس</span>
@@ -727,15 +1394,9 @@ select {
     <div class="canvas-wrapper">
       <div class="status-pill">
         <span class="dot" id="statusDot"></span>
-        <span id="statusText">جاهز للتنفيذ</span>
+        <span id="statusText">جاهز لتشغيل اللبنات</span>
       </div>
-      
       <canvas id="vrCanvas" width="560" height="560"></canvas>
-
-      <div class="view-overlay-controls">
-        <button class="btn-icon" onclick="clearTrailsOnly()" title="مسح خطوط الرسم فقط">🖌 مسح الرسم</button>
-        <button class="btn-icon" onclick="resetRobotPositionOnly()" title="إعادة الروبوت للمركز">🎯 ضبط الموقع</button>
-      </div>
     </div>
   </div>
 
@@ -743,16 +1404,13 @@ select {
 
 <script>
 /**
- * VEX VR Offline Unified Engine
- * Bridges Drag-and-Drop Visual Blocks and Python Execution seamlessly.
+ * VEXcode VR Blocks Offline Engine
+ * Full visual drag-and-drop block interface connected to simulation arena.
  */
 
+// Global Constants & State
 const FORWARD = 'FORWARD', REVERSE = 'REVERSE', RIGHT = 'RIGHT', LEFT = 'LEFT';
 const DOWN = 'DOWN', UP = 'UP', BOOST = 'BOOST', DROP = 'DROP';
-const MM = 'MM', INCHES = 'INCHES', DEGREES = 'DEGREES', PERCENT = 'PERCENT', SECONDS = 'SECONDS';
-const RED = '#ef4444', GREEN = '#10b981', BLUE = '#3b82f6', BLACK = '#0f172a';
-
-let CURRENT_MODE = 'blocks'; // 'blocks' or 'python'
 
 const STATE = {
   arenaSize: 2000,
@@ -761,10 +1419,13 @@ const STATE = {
     x: 0,
     y: 0,
     angle: 90,
+    headingOffset: 0,
     driveVelocity: 100,
+    turnVelocity: 60,
     penDown: false,
     penColor: '#0f172a',
     penWidth: 4,
+    driveDirection: null,
     magnetEnergized: false,
     pickedDisk: null,
     bumperPressed: false
@@ -773,17 +1434,26 @@ const STATE = {
   disks: [],
   walls: [],
   lines: [],
+  variables: Object.create(null),
   isRunning: false,
+  customCallDepth: 0,
   abortController: null,
-  speedMultiplier: 5
+  speedMultiplier: 5,
+  placedBlocks: [] // Array of block objects
 };
 
 const canvas = document.getElementById('vrCanvas');
 const ctx = canvas.getContext('2d');
 const workspaceDropzone = document.getElementById('workspaceDropzone');
-const codeEditor = document.getElementById('codeEditor');
-const lineNumbers = document.getElementById('lineNumbers');
+const projectFileInput = document.getElementById('projectFileInput');
+const workspaceScrollbar = document.getElementById('workspaceScrollbar');
+const workspaceScrollThumb = document.getElementById('workspaceScrollThumb');
 const consoleOutput = document.getElementById('consoleOutput');
+const consoleLog = document.getElementById('consoleLog');
+const consoleToggle = document.getElementById('consoleToggle');
+const codeViewer = document.getElementById('codeViewer');
+const codeViewerToggle = document.getElementById('codeViewerToggle');
+const generatedCode = document.getElementById('generatedCode');
 const btnRun = document.getElementById('btnRun');
 const btnStop = document.getElementById('btnStop');
 const statusDot = document.getElementById('statusDot');
@@ -791,8 +1461,264 @@ const statusText = document.getElementById('statusText');
 const simSpeedInput = document.getElementById('simSpeed');
 const speedValSpan = document.getElementById('speedVal');
 const blockCountSpan = document.getElementById('blockCount');
+const workspaceContainer = document.querySelector('.workspace-container');
+const toolboxResizer = document.getElementById('toolboxResizer');
+const programResizer = document.getElementById('programResizer');
 
-// HUD elements
+function updateWorkspaceScrollbar() {
+  const maxScroll = Math.max(0, workspaceDropzone.scrollHeight - workspaceDropzone.clientHeight);
+  const trackHeight = workspaceScrollbar.clientHeight;
+  const thumbHeight = Math.min(
+    trackHeight,
+    maxScroll > 0
+      ? Math.max(32, trackHeight * workspaceDropzone.clientHeight / workspaceDropzone.scrollHeight)
+      : 32
+  );
+  const thumbTravel = trackHeight - thumbHeight;
+  const thumbTop = maxScroll > 0
+    ? workspaceDropzone.scrollTop / maxScroll * thumbTravel
+    : 0;
+
+  workspaceScrollThumb.style.height = `${thumbHeight}px`;
+  workspaceScrollThumb.style.top = `${thumbTop}px`;
+  workspaceScrollbar.setAttribute('aria-valuemax', String(maxScroll));
+  workspaceScrollbar.setAttribute('aria-valuenow', String(Math.round(workspaceDropzone.scrollTop)));
+}
+
+workspaceDropzone.addEventListener('scroll', updateWorkspaceScrollbar, { passive: true });
+new ResizeObserver(updateWorkspaceScrollbar).observe(workspaceDropzone);
+new MutationObserver(updateWorkspaceScrollbar).observe(workspaceDropzone, {
+  childList: true,
+  subtree: true
+});
+
+let scrollbarDragOffset = null;
+workspaceScrollbar.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
+  const thumbRect = workspaceScrollThumb.getBoundingClientRect();
+  scrollbarDragOffset = event.target === workspaceScrollThumb
+    ? event.clientY - thumbRect.top
+    : thumbRect.height / 2;
+  workspaceScrollbar.classList.add('is-dragging');
+  workspaceScrollbar.setPointerCapture(event.pointerId);
+  moveWorkspaceScrollbar(event.clientY);
+});
+
+function moveWorkspaceScrollbar(clientY) {
+  const trackRect = workspaceScrollbar.getBoundingClientRect();
+  const thumbTravel = workspaceScrollbar.clientHeight - workspaceScrollThumb.offsetHeight;
+  const maxScroll = workspaceDropzone.scrollHeight - workspaceDropzone.clientHeight;
+  if (thumbTravel <= 0 || maxScroll <= 0) return;
+  const thumbTop = Math.max(0, Math.min(
+    thumbTravel,
+    clientY - trackRect.top - scrollbarDragOffset
+  ));
+  workspaceDropzone.scrollTop = thumbTop / thumbTravel * maxScroll;
+}
+
+workspaceScrollbar.addEventListener('pointermove', (event) => {
+  if (workspaceScrollbar.hasPointerCapture(event.pointerId)) {
+    moveWorkspaceScrollbar(event.clientY);
+  }
+});
+
+function stopWorkspaceScrollbarDrag(event) {
+  if (workspaceScrollbar.hasPointerCapture(event.pointerId)) {
+    workspaceScrollbar.releasePointerCapture(event.pointerId);
+  }
+  scrollbarDragOffset = null;
+  workspaceScrollbar.classList.remove('is-dragging');
+}
+
+workspaceScrollbar.addEventListener('pointerup', stopWorkspaceScrollbarDrag);
+workspaceScrollbar.addEventListener('pointercancel', stopWorkspaceScrollbarDrag);
+workspaceScrollbar.addEventListener('keydown', (event) => {
+  const increments = {
+    ArrowDown: 40,
+    ArrowUp: -40,
+    PageDown: workspaceDropzone.clientHeight * 0.9,
+    PageUp: -workspaceDropzone.clientHeight * 0.9,
+    Home: -workspaceDropzone.scrollTop,
+    End: workspaceDropzone.scrollHeight - workspaceDropzone.clientHeight - workspaceDropzone.scrollTop
+  };
+  if (!(event.key in increments)) return;
+  event.preventDefault();
+  workspaceDropzone.scrollTop += increments[event.key];
+});
+
+consoleToggle.addEventListener('click', () => {
+  const isVisible = !consoleOutput.hidden;
+  consoleOutput.hidden = isVisible;
+  consoleToggle.setAttribute('aria-expanded', String(!isVisible));
+  consoleToggle.textContent = isVisible ? 'إظهار منطقة الطباعة' : 'إخفاء منطقة الطباعة';
+});
+
+codeViewerToggle.addEventListener('click', () => {
+  const isVisible = !codeViewer.hidden;
+  codeViewer.hidden = isVisible;
+  codeViewerToggle.setAttribute('aria-expanded', String(!isVisible));
+  codeViewerToggle.textContent = isVisible ? 'إظهار عارض الكود' : 'إخفاء عارض الكود';
+  if (!isVisible) updateCodeViewer();
+});
+
+function resizeToolbox(clientX, clientY) {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const minSize = isStacked ? 140 : 220;
+  const maxSize = Math.max(minSize, isStacked
+    ? bounds.height - 180
+    : Math.min(bounds.width - 640, bounds.width * 0.42));
+  const size = Math.min(maxSize, Math.max(minSize, isStacked
+    ? bounds.bottom - clientY
+    : clientX - bounds.left));
+  const property = isStacked ? '--toolbox-height' : '--toolbox-width';
+  workspaceContainer.style.setProperty(property, `${size}px`);
+  toolboxResizer.setAttribute('aria-orientation', isStacked ? 'horizontal' : 'vertical');
+  toolboxResizer.setAttribute('aria-valuemin', String(minSize));
+  toolboxResizer.setAttribute('aria-valuemax', String(Math.round(maxSize)));
+  toolboxResizer.setAttribute('aria-valuenow', String(Math.round(size)));
+}
+
+function updateToolboxResizerOrientation() {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const minSize = isStacked ? 140 : 220;
+  const maxSize = Math.max(minSize, isStacked
+    ? bounds.height - 180
+    : Math.min(bounds.width - 640, bounds.width * 0.42));
+  const property = isStacked ? '--toolbox-height' : '--toolbox-width';
+  const size = parseFloat(getComputedStyle(workspaceContainer).getPropertyValue(property));
+  toolboxResizer.setAttribute('aria-orientation', isStacked ? 'horizontal' : 'vertical');
+  toolboxResizer.setAttribute('aria-valuemin', String(minSize));
+  toolboxResizer.setAttribute('aria-valuemax', String(Math.round(maxSize)));
+  toolboxResizer.setAttribute('aria-valuenow', String(Math.round(size)));
+}
+
+updateToolboxResizerOrientation();
+const toolboxBreakpoint = window.matchMedia('(max-width: 1050px)');
+toolboxBreakpoint.addEventListener('change', updateToolboxResizerOrientation);
+window.addEventListener('resize', updateToolboxResizerOrientation);
+
+function resizeProgramArea(clientX, clientY) {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const toolboxSize = parseFloat(getComputedStyle(workspaceContainer).getPropertyValue(isStacked ? '--toolbox-height' : '--toolbox-width'));
+  const minSize = 320;
+  const maxSize = Math.max(minSize, isStacked
+    ? window.innerHeight * 0.8
+    : bounds.width - toolboxSize - 320);
+  const size = Math.min(maxSize, Math.max(minSize, isStacked
+    ? bounds.bottom - clientY - toolboxSize
+    : clientX - bounds.left - toolboxSize));
+  const property = isStacked ? '--program-height' : '--program-width';
+  workspaceContainer.style.setProperty(property, `${size}px`);
+  programResizer.setAttribute('aria-orientation', isStacked ? 'horizontal' : 'vertical');
+  programResizer.setAttribute('aria-valuemin', String(minSize));
+  programResizer.setAttribute('aria-valuemax', String(Math.round(maxSize)));
+  programResizer.setAttribute('aria-valuenow', String(Math.round(size)));
+}
+
+function updateProgramResizerOrientation() {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const toolboxSize = parseFloat(getComputedStyle(workspaceContainer).getPropertyValue(isStacked ? '--toolbox-height' : '--toolbox-width'));
+  const minSize = 320;
+  const maxSize = Math.max(minSize, isStacked
+    ? window.innerHeight * 0.8
+    : bounds.width - toolboxSize - 320);
+  const property = isStacked ? '--program-height' : '--program-width';
+  const rawSize = getComputedStyle(workspaceContainer).getPropertyValue(property);
+  const size = rawSize.trim().endsWith('%')
+    ? bounds.width * parseFloat(rawSize) / 100
+    : parseFloat(rawSize);
+  programResizer.setAttribute('aria-orientation', isStacked ? 'horizontal' : 'vertical');
+  programResizer.setAttribute('aria-valuemin', String(minSize));
+  programResizer.setAttribute('aria-valuemax', String(Math.round(maxSize)));
+  programResizer.setAttribute('aria-valuenow', String(Math.round(size)));
+}
+
+updateProgramResizerOrientation();
+toolboxBreakpoint.addEventListener('change', updateProgramResizerOrientation);
+window.addEventListener('resize', updateProgramResizerOrientation);
+
+programResizer.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
+  programResizer.classList.add('is-resizing');
+  programResizer.setPointerCapture(event.pointerId);
+  resizeProgramArea(event.clientX, event.clientY);
+});
+
+programResizer.addEventListener('pointermove', (event) => {
+  if (programResizer.hasPointerCapture(event.pointerId)) {
+    resizeProgramArea(event.clientX, event.clientY);
+  }
+});
+
+function stopProgramResize(event) {
+  if (programResizer.hasPointerCapture(event.pointerId)) {
+    programResizer.releasePointerCapture(event.pointerId);
+  }
+  programResizer.classList.remove('is-resizing');
+}
+
+programResizer.addEventListener('pointerup', stopProgramResize);
+programResizer.addEventListener('pointercancel', stopProgramResize);
+programResizer.addEventListener('keydown', (event) => {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const decrease = isStacked ? event.key === 'ArrowDown' : event.key === 'ArrowLeft';
+  const increase = isStacked ? event.key === 'ArrowUp' : event.key === 'ArrowRight';
+  if (!decrease && !increase) return;
+  event.preventDefault();
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const property = isStacked ? '--program-height' : '--program-width';
+  const rawSize = getComputedStyle(workspaceContainer).getPropertyValue(property);
+  const currentSize = rawSize.trim().endsWith('%')
+    ? bounds.width * parseFloat(rawSize) / 100
+    : parseFloat(rawSize);
+  const amount = event.shiftKey ? 30 : 10;
+  const toolboxSize = parseFloat(getComputedStyle(workspaceContainer).getPropertyValue(isStacked ? '--toolbox-height' : '--toolbox-width'));
+  const x = isStacked ? bounds.right : bounds.left + toolboxSize + currentSize + (increase ? amount : -amount);
+  const y = isStacked ? bounds.bottom - toolboxSize - currentSize + (increase ? -amount : amount) : bounds.top;
+  resizeProgramArea(x, y);
+});
+
+toolboxResizer.addEventListener('pointerdown', (event) => {
+  event.preventDefault();
+  toolboxResizer.classList.add('is-resizing');
+  toolboxResizer.setPointerCapture(event.pointerId);
+  resizeToolbox(event.clientX, event.clientY);
+});
+
+toolboxResizer.addEventListener('pointermove', (event) => {
+  if (toolboxResizer.hasPointerCapture(event.pointerId)) {
+    resizeToolbox(event.clientX, event.clientY);
+  }
+});
+
+function stopToolboxResize(event) {
+  if (toolboxResizer.hasPointerCapture(event.pointerId)) {
+    toolboxResizer.releasePointerCapture(event.pointerId);
+  }
+  toolboxResizer.classList.remove('is-resizing');
+}
+
+toolboxResizer.addEventListener('pointerup', stopToolboxResize);
+toolboxResizer.addEventListener('pointercancel', stopToolboxResize);
+toolboxResizer.addEventListener('keydown', (event) => {
+  const isStacked = window.matchMedia('(max-width: 1050px)').matches;
+  const decrease = isStacked ? event.key === 'ArrowUp' : event.key === 'ArrowLeft';
+  const increase = isStacked ? event.key === 'ArrowDown' : event.key === 'ArrowRight';
+  if (!decrease && !increase) return;
+  event.preventDefault();
+  const currentSize = parseFloat(getComputedStyle(workspaceContainer).getPropertyValue(isStacked ? '--toolbox-height' : '--toolbox-width'));
+  const amount = event.shiftKey ? 30 : 10;
+  const bounds = workspaceContainer.getBoundingClientRect();
+  const x = isStacked ? bounds.right : bounds.left + currentSize + (increase ? amount : -amount);
+  const y = isStacked ? bounds.bottom - currentSize + (decrease ? amount : -amount) : bounds.top;
+  resizeToolbox(x, y);
+});
+
+// HUD
 const hudPos = document.getElementById('hudPos');
 const hudHeading = document.getElementById('hudHeading');
 const hudDistance = document.getElementById('hudDistance');
@@ -804,179 +1730,29 @@ simSpeedInput.addEventListener('input', (e) => {
   speedValSpan.innerText = STATE.speedMultiplier + 'x';
 });
 
-// Sync code editor line numbers
-codeEditor.addEventListener('input', updateCodeLineNumbers);
-codeEditor.addEventListener('scroll', () => { lineNumbers.scrollTop = codeEditor.scrollTop; });
-codeEditor.addEventListener('keydown', (e) => {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    const start = codeEditor.selectionStart, end = codeEditor.selectionEnd;
-    codeEditor.value = codeEditor.value.substring(0, start) + "    " + codeEditor.value.substring(end);
-    codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
-    updateCodeLineNumbers();
-  }
-});
-function updateCodeLineNumbers() {
-  const count = codeEditor.value.split('\n').length;
-  lineNumbers.innerHTML = Array.from({ length: count }, (_, i) => i + 1).join('<br>');
-}
-
 function appendConsole(msg, type = 'normal') {
   const p = document.createElement('div');
   if (type === 'error') p.className = 'log-err';
   else if (type === 'info') p.className = 'log-info';
   else if (type === 'warn') p.className = 'log-warn';
   p.textContent = msg;
-  consoleOutput.appendChild(p);
-  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  consoleLog.appendChild(p);
+  consoleLog.scrollTop = consoleLog.scrollHeight;
 }
 
-function clearConsole() { consoleOutput.innerHTML = ''; }
-
-function switchMode(mode) {
-  if (STATE.isRunning) stopExecution();
-  CURRENT_MODE = mode;
-
-  const btnBlocks = document.getElementById('btnModeBlocks');
-  const btnPython = document.getElementById('btnModePython');
-  const blocksView = document.getElementById('blocksView');
-  const pythonView = document.getElementById('pythonView');
-  const toolboxPanel = document.getElementById('toolboxPanel');
-
-  if (mode === 'blocks') {
-    btnBlocks.classList.add('active');
-    btnPython.classList.remove('active');
-    blocksView.style.display = 'flex';
-    pythonView.style.display = 'none';
-    toolboxPanel.style.display = 'flex';
-  } else {
-    btnPython.classList.add('active');
-    btnBlocks.classList.remove('active');
-    blocksView.style.display = 'none';
-    pythonView.style.display = 'flex';
-    toolboxPanel.style.display = 'none';
-
-    // If python editor is empty, auto-generate from current blocks
-    if (!codeEditor.value.trim()) {
-      convertBlocksToPython();
-    }
-  }
+function clearConsole() {
+  consoleLog.innerHTML = '';
 }
 
-function convertBlocksToPython() {
-  const blocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
-  if (blocks.length === 0) {
-    appendConsole('لا توجد لبنات برمجية لتحويلها إلى بايثون!', 'warn');
-    return;
-  }
-
-  let code = "# تم توليد كود بايثون تلقائياً من اللبنات البرمجية\n\n";
-  for (let i = 0; i < blocks.length; i++) {
-    const card = blocks[i].querySelector('.block-card');
-    const type = card.dataset.type;
-
-    if (type === 'drive_for') {
-      const dir = card.querySelector('[data-field="dir"]').value;
-      const dist = card.querySelector('[data-field="dist"]').value;
-      code += `drivetrain.drive_for(${dir}, ${dist}, MM)\n`;
-    } else if (type === 'turn_for') {
-      const dir = card.querySelector('[data-field="dir"]').value;
-      const angle = card.querySelector('[data-field="angle"]').value;
-      code += `drivetrain.turn_for(${dir}, ${angle}, DEGREES)\n`;
-    } else if (type === 'set_speed') {
-      const spd = card.querySelector('[data-field="speed"]').value;
-      code += `drivetrain.set_drive_velocity(${spd}, PERCENT)\n`;
-    } else if (type === 'pen_move') {
-      const act = card.querySelector('[data-field="action"]').value;
-      code += `pen.move(${act})\n`;
-    } else if (type === 'pen_color') {
-      const col = card.querySelector('[data-field="color"]').value;
-      const colName = col === '#ef4444' ? 'RED' : col === '#3b82f6' ? 'BLUE' : col === '#10b981' ? 'GREEN' : 'BLACK';
-      code += `pen.set_pen_color(${colName})\n`;
-    } else if (type === 'wait_sec') {
-      const sec = card.querySelector('[data-field="sec"]').value;
-      code += `wait(${sec}, SECONDS)\n`;
-    } else if (type === 'magnet_action') {
-      const act = card.querySelector('[data-field="action"]').value;
-      code += `magnet.energize(${act})\n`;
-    } else if (type === 'drive_until_obstacle') {
-      const dist = card.querySelector('[data-field="dist"]').value;
-      code += `while distance.get_distance(MM) > ${dist}:\n    drivetrain.drive_for(FORWARD, 15, MM)\n`;
-    } else if (type === 'drive_until_bumper') {
-      code += `while not left_bumper.pressing():\n    drivetrain.drive_for(FORWARD, 20, MM)\n`;
-    } else if (type === 'print_msg') {
-      const msg = card.querySelector('[data-field="msg"]').value;
-      code += `print("${msg}")\n`;
-    } else if (type === 'set_cursor_next_row') {
-      code += `print()  # تعيين المؤشر إلى الصف التالي\n`;
-    } else if (type === 'clear_console') {
-      code += `# مسح وحدة التحكم\n`;
-    } else if (type === 'repeat_times') {
-      const times = card.querySelector('[data-field="times"]').value;
-      code += `for count in range(${times}):\n`;
-      // Indent subsequent blocks
-      for (let j = i + 1; j < blocks.length; j++) {
-        const cCard = blocks[j].querySelector('.block-card');
-        const cType = cCard.dataset.type;
-        if (cType === 'drive_for') {
-          code += `    drivetrain.drive_for(${cCard.querySelector('[data-field="dir"]').value}, ${cCard.querySelector('[data-field="dist"]').value}, MM)\n`;
-        } else if (cType === 'turn_for') {
-          code += `    drivetrain.turn_for(${cCard.querySelector('[data-field="dir"]').value}, ${cCard.querySelector('[data-field="angle"]').value}, DEGREES)\n`;
-        }
-      }
-      break;
-    }
-  }
-
-  codeEditor.value = code;
-  updateCodeLineNumbers();
-  appendConsole('تم توليد كود بايثون بنجاح!', 'info');
-  switchMode('python');
-}
-
-function clearActiveWorkspace() {
-  stopExecution();
-  if (CURRENT_MODE === 'blocks') {
-    const placed = workspaceDropzone.querySelectorAll('.placed-block');
-    placed.forEach(b => b.remove());
-    updateBlockCount();
-    appendConsole('تم مسح جميع اللبنات.', 'info');
-  } else {
-    codeEditor.value = '';
-    updateCodeLineNumbers();
-    appendConsole('تم مسح كود بايثون.', 'info');
-  }
-}
-
-function exportBlocksOrCode() {
-  const content = CURRENT_MODE === 'blocks' ? getBlocksJSON() : codeEditor.value;
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = CURRENT_MODE === 'blocks' ? 'vex_blocks_project.json' : 'vex_program.py';
-  a.click();
-}
-
-function getBlocksJSON() {
-  const blocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
-  const data = blocks.map(b => {
-    const card = b.querySelector('.block-card');
-    const fields = {};
-    card.querySelectorAll('[data-field]').forEach(fld => {
-      fields[fld.dataset.field] = fld.value;
-    });
-    return { type: card.dataset.type, fields };
-  });
-  return JSON.stringify(data, null, 2);
-}
-
-function openHelpDialog() {
+function openBlocksHelp() {
   alert(
-    "💡 دليل الاستخدام السريع:\n\n" +
-    "• وضع اللبنات (Blocks): اسحب وأفلت اللبنات ورتبها ثم اضغط تشغيل.\n" +
-    "• وضع بايثون (Python): اكتب أوامر بايثون المباشرة مثل drivetrain.drive_for و pen.move.\n" +
-    "• التحويل التلقائي: يمكنك تحويل ترتيب اللبنات إلى بايثون بضغطة زر (توليد بايثون ➔).\n" +
-    "• يعمل 100% بدون إنترنت داخل أي متصفح."
+    "💡 طريقة استخدام اللبنات البرمجية:\n\n" +
+    "1. اسحب أي لبنة من لوحة اللبنات (على اليمين) وأفلتها داخل مساحة العمل.\n" +
+    "2. اسحب فقاعة المتغير من قسم المتغيرات إلى حقل رقمي لاستخدامه كقيمة.\n" +
+    "3. اسحب لبنة حساب من قسم الحساب إلى خانة قيمة؛ ويمكن تركيب العمليات داخل بعضها.\n" +
+    "4. يمكنك تعديل القيم (المسافة، الزاوية، الألوان، التكرار) داخل كل لبنة مباشرة.\n" +
+    "5. اضغط زر [▶ تشغيل اللبنات] لرؤية الروبوت ينفذ خطواتك مباشرة في ساحة المحاكاة!\n" +
+    "6. يمكنك إعادة ترتيب اللبنات أو حذف أي لبنة بالضغط على زر (✖)."
   );
 }
 
@@ -986,71 +1762,390 @@ function openHelpDialog() {
 let draggedElement = null;
 let draggedFromPalette = false;
 
+function setupComparisonCard(card) {
+  for (const side of ['left', 'right']) {
+    const source = card.querySelector(`[data-field="${side}-source"]`);
+    const value = card.querySelector(`[data-field="${side}"]`);
+    const variable = card.querySelector(`[data-field="${side}-variable"]`);
+    const updateOperandInput = () => {
+      value.hidden = source.value !== 'value';
+      value.disabled = source.value !== 'value';
+      variable.hidden = source.value !== 'variable';
+      variable.disabled = source.value !== 'variable';
+      value.title = value.disabled ? 'تُقرأ القيمة مباشرة من الروبوت' : 'أدخل قيمة للمقارنة';
+    };
+    source.addEventListener('change', updateOperandInput);
+    updateOperandInput();
+  }
+}
+
+function validateIdentifier(value, label) {
+  const identifier = String(value || '').trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(identifier)) {
+    throw new Error(`أدخل اسمًا صالحًا لـ${label} باستخدام الأحرف الإنجليزية والأرقام والشرطة السفلية.`);
+  }
+  return identifier;
+}
+
+const MATH_EXPRESSION_PREFIX = '@math:';
+const MATH_OPERATORS = {
+  math_add: '+',
+  math_subtract: '-',
+  math_multiply: '*',
+  math_divide: '/',
+  math_remainder: '%'
+};
+
+function isMathReporterType(type) {
+  return Object.hasOwn(MATH_OPERATORS, type);
+}
+
+function mathExpressionFromCard(card) {
+  const type = card?.dataset.type;
+  if (!isMathReporterType(type)) throw new Error('لبنة حسابية غير صالحة.');
+  const leftField = card.querySelector('[data-field="left"]');
+  const rightField = card.querySelector('[data-field="right"]');
+  const left = String(leftField?.dataset.mathExpression || leftField?.value || '').trim();
+  const right = String(rightField?.dataset.mathExpression || rightField?.value || '').trim();
+  if (!left || !right) throw new Error('أدخل القيمتين في لبنة العملية الحسابية.');
+  return `${MATH_EXPRESSION_PREFIX}${JSON.stringify({ type, left, right })}`;
+}
+
+function parseMathExpression(raw, depth = 0) {
+  if (!raw.startsWith(MATH_EXPRESSION_PREFIX) || depth > 50) {
+    throw new Error('صيغة العملية الحسابية غير صالحة.');
+  }
+  let expression;
+  try {
+    expression = JSON.parse(raw.slice(MATH_EXPRESSION_PREFIX.length));
+  } catch {
+    throw new Error('صيغة العملية الحسابية غير صالحة.');
+  }
+  if (!expression || !isMathReporterType(expression.type) ||
+      typeof expression.left !== 'string' || typeof expression.right !== 'string') {
+    throw new Error('صيغة العملية الحسابية غير صالحة.');
+  }
+  for (const operand of [expression.left, expression.right]) {
+    if (operand.startsWith(MATH_EXPRESSION_PREFIX)) parseMathExpression(operand, depth + 1);
+  }
+  return expression;
+}
+
+function formatMathExpression(raw) {
+  const expression = parseMathExpression(raw);
+  const symbols = {
+    math_add: '+',
+    math_subtract: '−',
+    math_multiply: '×',
+    math_divide: '÷',
+    math_remainder: 'الباقي من'
+  };
+  const operandText = value => value.startsWith(MATH_EXPRESSION_PREFIX)
+    ? formatMathExpression(value)
+    : value;
+  const operator = symbols[expression.type];
+  return expression.type === 'math_remainder'
+    ? `(${operator} ${operandText(expression.left)} / ${operandText(expression.right)})`
+    : `(${operandText(expression.left)} ${operator} ${operandText(expression.right)})`;
+}
+
+function evaluateNumericExpression(raw, label, depth = 0) {
+  const value = String(raw ?? '').trim();
+  if (!value) throw new Error(`أدخل قيمة ${label}.`);
+  if (value.startsWith(MATH_EXPRESSION_PREFIX)) {
+    if (depth > 50) throw new Error('تداخل العمليات الحسابية يتجاوز الحد المسموح.');
+    const expression = parseMathExpression(value, depth);
+    const left = evaluateNumericExpression(expression.left, label, depth + 1);
+    const right = evaluateNumericExpression(expression.right, label, depth + 1);
+    let result;
+    switch (expression.type) {
+      case 'math_add': result = left + right; break;
+      case 'math_subtract': result = left - right; break;
+      case 'math_multiply': result = left * right; break;
+      case 'math_divide':
+        if (right === 0) throw new Error('لا يمكن القسمة على صفر.');
+        result = left / right;
+        break;
+      case 'math_remainder':
+        if (right === 0) throw new Error('لا يمكن حساب الباقي عند القسمة على صفر.');
+        result = left % right;
+        break;
+      default: throw new Error('نوع العملية الحسابية غير مدعوم.');
+    }
+    if (!Number.isFinite(result)) throw new Error('نتيجة العملية الحسابية ليست رقمًا صالحًا.');
+    return result;
+  }
+  const number = Number(value);
+  if (Number.isFinite(number)) return number;
+  const name = validateIdentifier(value, 'المتغير');
+  if (!Object.hasOwn(STATE.variables, name)) {
+    throw new Error(`المتغير ${name} غير معرّف قبل استخدامه في ${label}.`);
+  }
+  const variableValue = STATE.variables[name];
+  if (typeof variableValue !== 'number' || !Number.isFinite(variableValue)) {
+    throw new Error(`قيمة المتغير ${name} ليست رقمًا صالحًا.`);
+  }
+  return variableValue;
+}
+
+function readNumericField(card, field, label) {
+  const input = card.querySelector(`[data-field="${field}"]`);
+  const raw = input?.dataset.mathExpression || String(input?.value ?? '');
+  return evaluateNumericExpression(raw, label);
+}
+
+function updateVariableReporters() {
+  const reporterList = document.getElementById('variableReporters');
+  if (!reporterList) return;
+  const names = new Set(
+    [...document.querySelectorAll(
+      '.blocks-palette [data-type="set_variable"], .blocks-palette [data-type="change_variable"], ' +
+      '#workspaceDropzone [data-type="set_variable"], #workspaceDropzone [data-type="change_variable"]'
+    )]
+      .map(card => card.querySelector('[data-field="name"]')?.value.trim())
+      .filter(name => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name))
+  );
+  if (!names.size) names.add('counter');
+  reporterList.replaceChildren(...[...names].map(name => {
+    const reporter = document.createElement('span');
+    reporter.className = 'variable-reporter';
+    reporter.textContent = name;
+    reporter.draggable = true;
+    reporter.dataset.variableName = name;
+    reporter.title = `اسحب المتغير ${name} إلى حقل قيمة`;
+    reporter.setAttribute('aria-label', `المتغير ${name}، قابل للسحب`);
+    reporter.addEventListener('dragstart', event => {
+      draggedElement = reporter;
+      draggedFromPalette = true;
+      reporter.classList.add('dragging');
+      event.dataTransfer.setData('text/plain', name);
+      event.dataTransfer.effectAllowed = 'copy';
+    });
+    reporter.addEventListener('dragend', () => {
+      reporter.classList.remove('dragging');
+      draggedElement = null;
+      removePlaceholder();
+    });
+    return reporter;
+  }));
+}
+
+function isVariableDeclaredInWorkspace(name) {
+  return [...workspaceDropzone.querySelectorAll(
+    '.block-card[data-type="set_variable"], .block-card[data-type="change_variable"]'
+  )].some(card => card.querySelector('[data-field="name"]')?.value.trim() === name);
+}
+
+// Setup palette drag listeners
 document.querySelectorAll('.blocks-palette .block-card').forEach(card => {
+  if (card.dataset.type === 'compare') setupComparisonCard(card);
   card.addEventListener('dragstart', (e) => {
     draggedElement = card;
     draggedFromPalette = true;
     card.classList.add('dragging');
     e.dataTransfer.setData('text/plain', card.dataset.type);
   });
+
   card.addEventListener('dragend', () => {
     card.classList.remove('dragging');
     draggedElement = null;
   });
 });
 
-workspaceDropzone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  const afterElement = getDragAfterElement(workspaceDropzone, e.clientY);
-  const placeholder = getOrCreatePlaceholder();
-  if (afterElement == null) {
-    workspaceDropzone.appendChild(placeholder);
+function isVariableReporterDrag() {
+  return draggedFromPalette && draggedElement?.classList.contains('variable-reporter');
+}
+
+function getDraggedMathCard() {
+  if (!draggedElement) return null;
+  const card = draggedFromPalette
+    ? draggedElement
+    : draggedElement.querySelector('.block-card[data-type]');
+  return isMathReporterType(card?.dataset.type) ? card : null;
+}
+
+function isValueReporterDrag() {
+  return isVariableReporterDrag() || Boolean(getDraggedMathCard());
+}
+
+function valueDropTarget(eventTarget) {
+  return eventTarget.closest('input.block-field-num:not([type="number"]), input[data-field="msg"]');
+}
+
+workspaceDropzone.addEventListener('input', event => {
+  const input = event.target;
+  if (input.matches('input.block-field-num, input[data-field="msg"]') &&
+      input.dataset.mathDisplay !== undefined && input.value !== input.dataset.mathDisplay) {
+    delete input.dataset.mathExpression;
+    delete input.dataset.mathDisplay;
+  }
+}, true);
+
+workspaceDropzone.addEventListener('dragover', event => {
+  const target = valueDropTarget(event.target);
+  if (!target || !isValueReporterDrag()) return;
+  event.preventDefault();
+  event.stopPropagation();
+  target.classList.add('variable-drop-target');
+  event.dataTransfer.dropEffect = 'copy';
+}, true);
+
+workspaceDropzone.addEventListener('dragleave', event => {
+  event.target.closest?.('.variable-drop-target')?.classList.remove('variable-drop-target');
+}, true);
+
+workspaceDropzone.addEventListener('drop', event => {
+  const target = valueDropTarget(event.target);
+  if (!target || !isValueReporterDrag()) return;
+  event.preventDefault();
+  event.stopPropagation();
+  target.classList.remove('variable-drop-target');
+  const mathCard = getDraggedMathCard();
+  if (mathCard) {
+    const expression = mathExpressionFromCard(mathCard);
+    const display = formatMathExpression(expression);
+    target.dataset.mathExpression = expression;
+    target.dataset.mathDisplay = display;
+    target.value = display;
   } else {
-    workspaceDropzone.insertBefore(placeholder, afterElement);
+    delete target.dataset.mathExpression;
+    delete target.dataset.mathDisplay;
+    target.value = draggedElement.dataset.variableName;
   }
-});
+  target.dispatchEvent(new Event('input', { bubbles: true }));
+}, true);
 
-workspaceDropzone.addEventListener('dragleave', (e) => {
-  if (e.target === workspaceDropzone) removePlaceholder();
-});
+// Setup Dropzone
+setupDropContainer(workspaceDropzone);
 
-workspaceDropzone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  const placeholder = document.querySelector('.drop-placeholder');
-
-  if (draggedFromPalette && draggedElement) {
-    const clone = createPlacedBlockElement(draggedElement.dataset.type);
-    if (placeholder) {
-      workspaceDropzone.insertBefore(clone, placeholder);
+function setupDropContainer(container) {
+  container.addEventListener('dragover', (e) => {
+    e.stopPropagation();
+    if (isValueReporterDrag()) {
+      removePlaceholder();
+      return;
+    }
+    const draggedType = draggedFromPalette
+      ? draggedElement?.dataset.type
+      : draggedElement?.querySelector('.block-card')?.dataset.type;
+    const isConditionSlot = container.classList.contains('condition-slot');
+    if ((isConditionSlot && !isConditionBlockType(draggedType)) ||
+        (!isConditionSlot && isConditionBlockType(draggedType)) ||
+        isMathReporterType(draggedType)) {
+      removePlaceholder();
+      return;
+    }
+    e.preventDefault();
+    if (container.classList.contains('c-block-body')) {
+      container.classList.add('drag-over');
+    }
+    if (isConditionSlot) {
+      container.classList.add('drag-over');
+    }
+    const afterElement = getDragAfterElement(container, e.clientY);
+    const placeholder = getOrCreatePlaceholder();
+    if (afterElement == null) {
+      container.appendChild(placeholder);
     } else {
-      workspaceDropzone.appendChild(clone);
+      container.insertBefore(placeholder, afterElement);
     }
-  } else if (draggedElement && !draggedFromPalette) {
-    if (placeholder) {
-      workspaceDropzone.insertBefore(draggedElement, placeholder);
-    }
-  }
+  });
 
-  removePlaceholder();
-  updateBlockCount();
-});
+  container.addEventListener('dragleave', (e) => {
+    if (!container.contains(e.relatedTarget)) {
+      container.classList.remove('drag-over');
+      removePlaceholder();
+    }
+  });
+
+  container.addEventListener('drop', (e) => {
+    e.stopPropagation();
+    if (isValueReporterDrag()) {
+      removePlaceholder();
+      return;
+    }
+    const draggedType = draggedFromPalette
+      ? draggedElement?.dataset.type
+      : draggedElement?.querySelector('.block-card')?.dataset.type;
+    const isConditionSlot = container.classList.contains('condition-slot');
+    const placeholder = document.querySelector('.drop-placeholder');
+
+    if (isConditionSlot) {
+      if (isConditionBlockType(draggedType) && draggedElement) {
+        const condition = draggedFromPalette
+          ? createPlacedBlockElement(draggedType)
+          : draggedElement;
+        [...container.children]
+          .filter(child => child.classList.contains('placed-block') && child !== condition)
+          .forEach(child => child.remove());
+        if (placeholder?.parentElement === container) {
+          placeholder.replaceWith(condition);
+        } else {
+          container.appendChild(condition);
+        }
+        e.preventDefault();
+      }
+      container.classList.remove('drag-over');
+      removePlaceholder();
+      updateBlockCount();
+      return;
+    }
+
+    if (isConditionBlockType(draggedType) || isMathReporterType(draggedType)) {
+      removePlaceholder();
+      return;
+    }
+    e.preventDefault();
+
+    if (draggedFromPalette && draggedElement) {
+      const type = draggedElement.dataset.type;
+      const clone = createPlacedBlockElement(type);
+      if (!clone) return;
+      if (placeholder?.parentElement === container) {
+        container.insertBefore(clone, placeholder);
+      } else {
+        container.appendChild(clone);
+      }
+    } else if (draggedElement && !draggedFromPalette) {
+      // Reordering within or between containers
+      if (placeholder?.parentElement === container) {
+        container.insertBefore(draggedElement, placeholder);
+      } else {
+        container.appendChild(draggedElement);
+      }
+    }
+
+    container.classList.remove('drag-over');
+    removePlaceholder();
+    updateBlockCount();
+  });
+}
+
+function isConditionBlockType(type) {
+  return ['compare', 'eye_near', 'eye_color', 'bumper_pressed', 'logic_and', 'logic_or', 'logic_not']
+    .includes(type);
+}
 
 function getOrCreatePlaceholder() {
-  let ph = document.querySelector('.drop-placeholder');
-  if (!ph) {
-    ph = document.createElement('div');
-    ph.className = 'drop-placeholder';
+  let placeholder = document.querySelector('.drop-placeholder');
+  if (!placeholder) {
+    placeholder = document.createElement('div');
+    placeholder.className = 'drop-placeholder';
   }
-  return ph;
+  return placeholder;
 }
 
 function removePlaceholder() {
-  const ph = document.querySelector('.drop-placeholder');
-  if (ph) ph.remove();
+  const placeholder = document.querySelector('.drop-placeholder');
+  if (placeholder) placeholder.remove();
 }
 
 function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.placed-block:not(.dragging)')];
+  // Select placed blocks direct children of this container
+  const draggableElements = [...container.children].filter(child => 
+    child.classList && child.classList.contains('placed-block') && !child.classList.contains('dragging')
+  );
+
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
     const offset = y - box.top - box.height / 2;
@@ -1063,35 +2158,82 @@ function getDragAfterElement(container, y) {
 }
 
 function createPlacedBlockElement(type, initialValues = {}) {
+  if (type === 'repeat_times') {
+    return createRepeatContainerBlock(initialValues);
+  }
+  if (type === 'repeat_until') {
+    return createRepeatUntilBlock();
+  }
+  if (type === 'repeat_forever') {
+    return createRepeatForeverBlock();
+  }
+  if (type === 'if_then' || type === 'if_else') {
+    return createConditionalContainerBlock(type);
+  }
+  if (type === 'custom_define') {
+    return createCustomDefinitionBlock(initialValues);
+  }
+
   const wrapper = document.createElement('div');
   wrapper.className = 'placed-block';
   wrapper.draggable = true;
 
+  // Find original palette template
   const original = document.querySelector(`.blocks-palette .block-card[data-type="${type}"]`);
   if (!original) return null;
 
   const cardClone = original.cloneNode(true);
+  if (type === 'wait_until') {
+    cardClone.querySelector('.condition-slot-preview').replaceWith(createConditionSlot());
+  }
+  if (type === 'logic_and' || type === 'logic_or') {
+    cardClone.querySelectorAll('.condition-slot-preview').forEach(preview => {
+      preview.replaceWith(createConditionSlot());
+    });
+  }
+  if (type === 'logic_not' || type === 'eye_near' || type === 'eye_color' || type === 'bumper_pressed') {
+    cardClone.querySelector('.condition-slot-preview')?.replaceWith(createConditionSlot());
+  }
+  // Set initial field values if supplied
   for (const [key, val] of Object.entries(initialValues)) {
     const fld = cardClone.querySelector(`[data-field="${key}"]`);
-    if (fld) fld.value = val;
+    if (fld) {
+      if (typeof val === 'string' && val.startsWith(MATH_EXPRESSION_PREFIX)) {
+        fld.dataset.mathExpression = val;
+        fld.dataset.mathDisplay = formatMathExpression(val);
+        fld.value = fld.dataset.mathDisplay;
+      } else {
+        fld.value = val;
+      }
+    }
   }
+  if (type === 'compare') setupComparisonCard(cardClone);
 
+  // Delete button
   const delBtn = document.createElement('button');
   delBtn.className = 'btn-del-block';
   delBtn.innerHTML = '✖';
-  delBtn.title = 'حذف اللبنة';
-  delBtn.onclick = () => { wrapper.remove(); updateBlockCount(); };
+  delBtn.title = 'حذف هذه اللبنة';
+  delBtn.onclick = (e) => {
+    e.stopPropagation();
+    wrapper.remove();
+    updateBlockCount();
+  };
 
   wrapper.appendChild(cardClone);
   wrapper.appendChild(delBtn);
 
+  // Setup drag listeners for reordering
   wrapper.addEventListener('dragstart', (e) => {
+    e.stopPropagation();
     draggedElement = wrapper;
     draggedFromPalette = false;
     wrapper.classList.add('dragging');
     e.dataTransfer.setData('text/plain', type);
   });
-  wrapper.addEventListener('dragend', () => {
+
+  wrapper.addEventListener('dragend', (e) => {
+    e.stopPropagation();
     wrapper.classList.remove('dragging');
     draggedElement = null;
     removePlaceholder();
@@ -1100,14 +2242,461 @@ function createPlacedBlockElement(type, initialValues = {}) {
   return wrapper;
 }
 
+function createConditionSlot() {
+  const slot = document.createElement('span');
+  slot.className = 'condition-slot';
+  setupDropContainer(slot);
+  return slot;
+}
+
+function createRepeatContainerBlock(initialValues = {}) {
+  const container = document.createElement('div');
+  container.className = 'placed-block c-block-container';
+  container.draggable = true;
+
+  const timesVal = initialValues.times ?? 4;
+
+  container.innerHTML = `
+    <div class="c-block-header">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span>🔁 كرر</span>
+        <input type="number" class="block-field block-field-num" value="${timesVal}" data-field="times">
+        <span>مرات:</span>
+      </div>
+      <button class="btn-del-block" title="حذف حلقة التكرار">✖</button>
+    </div>
+    <div class="c-block-body"></div>
+    <div class="c-block-footer">نهاية التكرار ⤴</div>
+  `;
+
+  const header = container.querySelector('.c-block-header');
+  const body = container.querySelector('.c-block-body');
+  const delBtn = container.querySelector('.btn-del-block');
+
+  // Setup inner container dropzone
+  setupDropContainer(body);
+
+  // Delete handler
+  delBtn.onclick = (e) => {
+    e.stopPropagation();
+    container.remove();
+    updateBlockCount();
+  };
+
+  // Dragging the entire repeat container
+  container.addEventListener('dragstart', (e) => {
+    e.stopPropagation();
+    draggedElement = container;
+    draggedFromPalette = false;
+    container.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', 'repeat_times');
+  });
+
+  container.addEventListener('dragend', (e) => {
+    e.stopPropagation();
+    container.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+
+  return container;
+}
+
+function createCustomDefinitionBlock(initialValues = {}) {
+  const container = document.createElement('div');
+  container.className = 'placed-block c-block-container c-block-custom-definition';
+  container.draggable = true;
+  const template = document.querySelector('.blocks-palette .block-card[data-type="custom_define"]');
+  const header = document.createElement('div');
+  header.className = 'c-block-header';
+  const definitionCard = template.cloneNode(true);
+  definitionCard.draggable = false;
+  for (const [key, value] of Object.entries(initialValues)) {
+    const field = definitionCard.querySelector(`[data-field="${key}"]`);
+    if (field) field.value = value;
+  }
+  header.appendChild(definitionCard);
+  const delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-block';
+  delBtn.type = 'button';
+  delBtn.title = 'حذف تعريف الكتلة';
+  delBtn.textContent = '✖';
+  header.appendChild(delBtn);
+  const body = document.createElement('div');
+  body.className = 'c-block-body';
+  const footer = document.createElement('div');
+  footer.className = 'c-block-footer';
+  footer.textContent = 'نهاية تعريف الكتلة ⤴';
+  container.append(header, body, footer);
+  setupDropContainer(body);
+  delBtn.onclick = (event) => {
+    event.stopPropagation();
+    container.remove();
+    updateBlockCount();
+  };
+  container.addEventListener('dragstart', (event) => {
+    if (event.target.closest('input')) {
+      event.preventDefault();
+      return;
+    }
+    event.stopPropagation();
+    draggedElement = container;
+    draggedFromPalette = false;
+    container.classList.add('dragging');
+    event.dataTransfer.setData('text/plain', 'custom_define');
+  });
+  container.addEventListener('dragend', () => {
+    container.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+  return container;
+}
+
+function createConditionalContainerBlock(type) {
+  const isElse = type === 'if_else';
+  const container = document.createElement('div');
+  container.className = `placed-block c-block-container c-block-conditional${isElse ? ' c-block-if-else' : ''}`;
+  container.draggable = true;
+  container.innerHTML = `
+    <div class="c-block-header">
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <span>إذا</span>
+        <span class="condition-slot"></span>
+        <span>فنفّذ${isElse ? ' وإلا' : ''}</span>
+      </div>
+      <button class="btn-del-block" title="حذف الشرط">✖</button>
+    </div>
+    <div class="c-block-body"></div>
+    ${isElse ? '<div class="c-block-else-label">وإلا</div><div class="c-block-body c-block-else-body"></div>' : ''}
+    <div class="c-block-footer">نهاية الشرط ⤴</div>
+  `;
+  const slot = container.querySelector('.condition-slot');
+  const bodies = container.querySelectorAll('.c-block-body');
+  const delBtn = container.querySelector('.btn-del-block');
+  setupDropContainer(slot);
+  bodies.forEach(setupDropContainer);
+  delBtn.onclick = (event) => {
+    event.stopPropagation();
+    container.remove();
+    updateBlockCount();
+  };
+  container.addEventListener('dragstart', (event) => {
+    event.stopPropagation();
+    draggedElement = container;
+    draggedFromPalette = false;
+    container.classList.add('dragging');
+    event.dataTransfer.setData('text/plain', type);
+  });
+  container.addEventListener('dragend', () => {
+    container.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+  return container;
+}
+
+function createRepeatUntilBlock() {
+  const container = document.createElement('div');
+  container.className = 'placed-block c-block-container c-block-until';
+  container.draggable = true;
+  container.innerHTML = `
+    <div class="c-block-header">
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+        <span>🔁 كرر حتى</span>
+        <span class="condition-slot"></span>
+      </div>
+      <button class="btn-del-block" title="حذف حلقة التكرار">✖</button>
+    </div>
+    <div class="c-block-body"></div>
+    <div class="c-block-footer">نهاية التكرار ⤴</div>
+  `;
+
+  const header = container.querySelector('.c-block-header');
+  const body = container.querySelector('.c-block-body');
+  const slot = container.querySelector('.condition-slot');
+  const delBtn = container.querySelector('.btn-del-block');
+  setupDropContainer(body);
+  setupDropContainer(slot);
+
+  delBtn.onclick = (e) => {
+    e.stopPropagation();
+    container.remove();
+    updateBlockCount();
+  };
+  container.addEventListener('dragstart', (e) => {
+    e.stopPropagation();
+    draggedElement = container;
+    draggedFromPalette = false;
+    container.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', 'repeat_until');
+  });
+  container.addEventListener('dragend', (e) => {
+    e.stopPropagation();
+    container.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+
+  return container;
+}
+
+function createRepeatForeverBlock() {
+  const container = document.createElement('div');
+  container.className = 'placed-block c-block-container c-block-forever';
+  container.draggable = true;
+  container.innerHTML = `
+    <div class="c-block-header">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span>🔁 كرر إلى الأبد</span>
+      </div>
+      <button class="btn-del-block" title="حذف حلقة التكرار">✖</button>
+    </div>
+    <div class="c-block-body"></div>
+    <div class="c-block-footer">نهاية التكرار ⤴</div>
+  `;
+  const body = container.querySelector('.c-block-body');
+  const delBtn = container.querySelector('.btn-del-block');
+  setupDropContainer(body);
+  delBtn.onclick = (event) => {
+    event.stopPropagation();
+    container.remove();
+    updateBlockCount();
+  };
+  container.addEventListener('dragstart', (event) => {
+    event.stopPropagation();
+    draggedElement = container;
+    draggedFromPalette = false;
+    container.classList.add('dragging');
+    event.dataTransfer.setData('text/plain', 'repeat_forever');
+  });
+  container.addEventListener('dragend', () => {
+    container.classList.remove('dragging');
+    draggedElement = null;
+    removePlaceholder();
+  });
+  return container;
+}
+
 function updateBlockCount() {
   const count = workspaceDropzone.querySelectorAll('.placed-block').length;
   blockCountSpan.innerText = `عدد اللبنات: ${count}`;
 }
 
+function serializeProjectBlock(block, depth = 0, count = { value: 0 }) {
+  if (depth > 100 || ++count.value > 2000) {
+    throw new Error('المشروع يحتوي على تداخل أو عدد لبنات يتجاوز الحد المسموح.');
+  }
+
+  let type;
+  let card;
+  if (block.classList.contains('c-block-custom-definition')) {
+    type = 'custom_define';
+    card = block.querySelector('.c-block-header .block-card[data-type]');
+  } else if (block.classList.contains('c-block-conditional')) {
+    type = block.classList.contains('c-block-if-else') ? 'if_else' : 'if_then';
+  } else if (block.classList.contains('c-block-until')) {
+    type = 'repeat_until';
+  } else if (block.classList.contains('c-block-forever')) {
+    type = 'repeat_forever';
+  } else if (block.classList.contains('c-block-container')) {
+    type = 'repeat_times';
+  } else {
+    card = block.querySelector(':scope > .block-card[data-type]');
+    type = card?.dataset.type;
+  }
+  if (!type) throw new Error('تعذر قراءة إحدى اللبنات في المشروع.');
+
+  const vals = Object.fromEntries(
+    (card
+      ? [...card.querySelectorAll('[data-field]')].filter(field => field.closest('.placed-block') === block)
+      : type === 'repeat_times'
+        ? [...block.querySelectorAll(':scope > .c-block-header [data-field="times"]')]
+            .filter(field => field.closest('.placed-block') === block)
+        : [])
+      .map(field => [field.dataset.field, field.dataset.mathExpression || field.value])
+  );
+  const result = { type, vals };
+  const conditionSlots = [
+    ...block.querySelectorAll(':scope > .block-card .condition-slot, :scope > .c-block-header > div > .condition-slot')
+  ];
+  if (conditionSlots.length) {
+    result.conditions = conditionSlots.map(slot => {
+      const condition = [...slot.children].find(child => child.classList.contains('placed-block'));
+      return condition ? serializeProjectBlock(condition, depth + 1, count) : null;
+    });
+  }
+
+  const body = block.querySelector(':scope > .c-block-body');
+  if (body) {
+    result.children = [...body.children]
+      .filter(child => child.classList.contains('placed-block'))
+      .map(child => serializeProjectBlock(child, depth + 1, count));
+  }
+  const elseBody = block.querySelector(':scope > .c-block-else-body');
+  if (elseBody) {
+    result.elseChildren = [...elseBody.children]
+      .filter(child => child.classList.contains('placed-block'))
+      .map(child => serializeProjectBlock(child, depth + 1, count));
+  }
+  return result;
+}
+
+function saveProjectFile() {
+  try {
+    const count = { value: 0 };
+    const blocks = [...workspaceDropzone.children]
+      .filter(block => block.classList.contains('placed-block'))
+      .map(block => serializeProjectBlock(block, 0, count));
+    const project = {
+      format: 'vex-vr-blocks-project',
+      version: 1,
+      playground: STATE.playgroundType,
+      blocks
+    };
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'vex-vr-project.json';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    appendConsole('تم حفظ المشروع في ملف JSON.', 'info');
+  } catch (error) {
+    appendConsole(`❌ تعذر حفظ المشروع: ${error.message}`, 'error');
+  }
+}
+
+function validateProject(project) {
+  const playgroundOptions = [...document.getElementById('playgroundSelect').options]
+    .map(option => option.value);
+  if (!project || project.format !== 'vex-vr-blocks-project' || project.version !== 1) {
+    throw new Error('صيغة الملف أو إصداره غير مدعوم.');
+  }
+  if (!playgroundOptions.includes(project.playground) || !Array.isArray(project.blocks)) {
+    throw new Error('ملف المشروع لا يحتوي على ساحة أو قائمة لبنات صالحة.');
+  }
+
+  const knownTypes = new Set([
+    ...[...document.querySelectorAll('.blocks-palette .block-card')]
+      .map(card => card.dataset.type),
+    'repeat_times', 'repeat_until', 'repeat_forever', 'if_then', 'if_else'
+  ]);
+  let count = 0;
+  const validateBlock = (block, depth = 0) => {
+    if (!block || typeof block !== 'object' || Array.isArray(block) ||
+        depth > 100 || ++count > 2000 || !knownTypes.has(block.type)) {
+      throw new Error('يحتوي الملف على لبنة غير صالحة أو يتجاوز حد التداخل.');
+    }
+    const containerTypes = new Set([
+      'repeat_times', 'repeat_until', 'repeat_forever', 'if_then', 'if_else', 'custom_define'
+    ]);
+    const conditionTypes = new Set([
+      'repeat_until', 'if_then', 'if_else', 'wait_until', 'logic_and', 'logic_or',
+      'logic_not', 'eye_near', 'eye_color', 'bumper_pressed'
+    ]);
+    if (block.children !== undefined && !containerTypes.has(block.type)) {
+      throw new Error('توجد لبنات متداخلة في موضع غير صالح.');
+    }
+    if (block.elseChildren !== undefined && block.type !== 'if_else') {
+      throw new Error('توجد لبنات وإلا في موضع غير صالح.');
+    }
+    if ((block.condition !== undefined || block.conditions !== undefined) &&
+        !conditionTypes.has(block.type)) {
+      throw new Error('توجد شروط في موضع غير صالح.');
+    }
+    const template = document.querySelector(`.blocks-palette .block-card[data-type="${block.type}"]`);
+    const allowedFields = block.type === 'repeat_times'
+      ? new Set(['times'])
+      : new Set([...(template?.querySelectorAll('[data-field]') || [])].map(field => field.dataset.field));
+    if (block.vals !== undefined &&
+        (!block.vals || typeof block.vals !== 'object' || Array.isArray(block.vals) ||
+         Object.entries(block.vals).some(([key, value]) =>
+           !allowedFields.has(key) || !['string', 'number', 'boolean'].includes(typeof value)))) {
+      throw new Error('إحدى اللبنات تحتوي على قيم غير صالحة.');
+    }
+    for (const value of Object.values(block.vals || {})) {
+      if (typeof value === 'string' && value.startsWith(MATH_EXPRESSION_PREFIX)) {
+        parseMathExpression(value);
+      }
+    }
+    for (const listName of ['children', 'elseChildren']) {
+      if (block[listName] !== undefined && !Array.isArray(block[listName])) {
+        throw new Error('قائمة اللبنات المتداخلة غير صالحة.');
+      }
+      for (const child of block[listName] || []) validateBlock(child, depth + 1);
+    }
+    if (block.condition !== undefined) {
+      validateBlock(block.condition, depth + 1);
+      if (!isConditionBlockType(block.condition.type)) {
+        throw new Error('إحدى اللبنات الموضوعة في خانة الشرط غير صالحة.');
+      }
+    }
+    if (block.conditions !== undefined) {
+      if (!Array.isArray(block.conditions)) throw new Error('قائمة الشروط غير صالحة.');
+      const slotCount = block.type === 'repeat_until' || block.type === 'if_then' || block.type === 'if_else'
+        ? 1
+        : template?.querySelectorAll('.condition-slot-preview').length || 0;
+      if (block.conditions.length > slotCount) throw new Error('عدد شروط اللبنة غير صالح.');
+      for (const condition of block.conditions) {
+        if (condition !== null) {
+          validateBlock(condition, depth + 1);
+          if (!isConditionBlockType(condition.type)) {
+            throw new Error('إحدى اللبنات الموضوعة في خانة الشرط غير صالحة.');
+          }
+        }
+      }
+    }
+  };
+  project.blocks.forEach(block => validateBlock(block));
+}
+
+async function openProjectFile(file) {
+  try {
+    const project = JSON.parse(await file.text());
+    validateProject(project);
+    const restoredBlocks = project.blocks.map(item => createPresetBlock(item));
+    if (restoredBlocks.some(block => !block)) {
+      throw new Error('تعذر إنشاء إحدى اللبنات الموجودة في الملف.');
+    }
+
+    stopExecution();
+    document.getElementById('playgroundSelect').value = project.playground;
+    document.getElementById('exampleSelect').value = '';
+    initPlayground(project.playground);
+    workspaceDropzone.querySelectorAll(':scope > .placed-block').forEach(block => block.remove());
+    workspaceDropzone.append(...restoredBlocks);
+    STATE.variables = Object.create(null);
+    updateBlockCount();
+    updateVariableReporters();
+    updateCodeViewer();
+    appendConsole(`تم فتح المشروع: ${file.name}`, 'info');
+  } catch (error) {
+    appendConsole(`❌ تعذر فتح المشروع: ${error.message}`, 'error');
+  } finally {
+    projectFileInput.value = '';
+  }
+}
+
+projectFileInput.addEventListener('change', event => {
+  const [file] = event.target.files;
+  if (file) openProjectFile(file);
+});
+
+function clearWorkspace() {
+  stopExecution();
+  const placed = workspaceDropzone.querySelectorAll('.placed-block');
+  placed.forEach(b => b.remove());
+  updateBlockCount();
+  appendConsole('تم تفريغ مساحة اللبنات البرمجية.', 'info');
+}
+
 function filterBlocks(cat, btn) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+
   const cards = document.querySelectorAll('.blocks-palette .block-card');
   cards.forEach(c => {
     if (cat === 'all' || c.classList.contains(`cat-${cat}`)) {
@@ -1116,42 +2705,54 @@ function filterBlocks(cat, btn) {
       c.style.display = 'none';
     }
   });
+  document.getElementById('variableReporters').style.display =
+    cat === 'all' || cat === 'variables' ? 'flex' : 'none';
 }
 
 /* =========================================================================
-   Coordinates, Math & Physics
+   Coordinates & Math Utilities
    ========================================================================= */
 function mmToPx(mm) { return (mm / STATE.arenaSize) * STATE.canvasSize; }
 function toScreenCoord(x, y) {
+  const halfArena = STATE.arenaSize / 2;
   return {
-    x: (x + 1000) / STATE.arenaSize * STATE.canvasSize,
-    y: (1000 - y) / STATE.arenaSize * STATE.canvasSize
+    x: (x + halfArena) / STATE.arenaSize * STATE.canvasSize,
+    y: (halfArena - y) / STATE.arenaSize * STATE.canvasSize
   };
 }
 function normalizeAngle(ang) { ang = ang % 360; return ang < 0 ? ang + 360 : ang; }
 function degToRad(deg) { return deg * Math.PI / 180; }
 
+/* =========================================================================
+   Playground Setup
+   ========================================================================= */
 function initPlayground(type) {
   STATE.playgroundType = type;
+  STATE.arenaSize = type === 'grid_corner' ? 2400 : 2000;
   STATE.lines = [];
   STATE.disks = [];
   STATE.walls = [];
   STATE.robot.penDown = false;
   STATE.robot.penColor = '#0f172a';
   STATE.robot.penWidth = 4;
+  STATE.robot.driveDirection = null;
   STATE.robot.magnetEnergized = false;
   STATE.robot.pickedDisk = null;
   STATE.robot.bumperPressed = false;
 
-  const bound = 960;
+  const bound = type === 'grid_corner' ? 1160 : 960;
   STATE.walls.push({ x1: -bound, y1: -bound, x2: bound, y2: -bound });
   STATE.walls.push({ x1: bound, y1: -bound, x2: bound, y2: bound });
-  STATE.walls.push({ x1: bound, y1: -bound, x2: -bound, y2: bound });
+  STATE.walls.push({ x1: bound, y1: bound, x2: -bound, y2: bound });
   STATE.walls.push({ x1: -bound, y1: bound, x2: -bound, y2: -bound });
 
   if (type === 'grid' || type === 'art') {
     STATE.robot.x = 0;
     STATE.robot.y = 0;
+    STATE.robot.angle = 90;
+  } else if (type === 'grid_corner') {
+    STATE.robot.x = -900;
+    STATE.robot.y = -900;
     STATE.robot.angle = 90;
   } else if (type === 'disk') {
     STATE.robot.x = 0;
@@ -1181,6 +2782,7 @@ function initPlayground(type) {
     STATE.disks = [{ id: 99, x: 800, y: 800, radius: 55, color: '#f59e0b', name: 'GOAL' }];
   }
 
+  STATE.robot.headingOffset = 0;
   updateSensorsHUD();
   render();
 }
@@ -1194,26 +2796,11 @@ function changePlayground(type) {
 function resetPlayground() {
   stopExecution();
   initPlayground(STATE.playgroundType);
-  appendConsole('تمت إعادة تعيين الساحة بالكامل.', 'info');
-}
-
-function clearTrailsOnly() {
-  STATE.lines = [];
-  render();
-  appendConsole('تم مسح خطوط الرسم.', 'info');
-}
-
-function resetRobotPositionOnly() {
-  STATE.robot.x = 0;
-  STATE.robot.y = (STATE.playgroundType === 'disk') ? -700 : (STATE.playgroundType === 'maze' ? -800 : 0);
-  STATE.robot.angle = 90;
-  updateSensorsHUD();
-  render();
-  appendConsole('تمت إعادة الروبوت إلى نقطة البداية.', 'info');
+  appendConsole('تمت إعادة تعيين موقع الروبوت والملعب.', 'info');
 }
 
 /* =========================================================================
-   Renderer
+   Rendering Arena & Sensors
    ========================================================================= */
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1223,15 +2810,16 @@ function render() {
   ctx.fillStyle = STATE.playgroundType === 'art' ? '#ffffff' : '#f8fafc';
   ctx.fillRect(0, 0, cw, ch);
 
-  if (STATE.playgroundType === 'grid' || STATE.playgroundType === 'disk') {
+  if (STATE.playgroundType === 'grid' || STATE.playgroundType === 'grid_corner' || STATE.playgroundType === 'disk') {
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#e2e8f0';
+    const halfArena = STATE.arenaSize / 2;
     for (let x = -800; x <= 800; x += 200) {
-      const p1 = toScreenCoord(x, -1000), p2 = toScreenCoord(x, 1000);
+      const p1 = toScreenCoord(x, -halfArena), p2 = toScreenCoord(x, halfArena);
       ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
     }
     for (let y = -800; y <= 800; y += 200) {
-      const p1 = toScreenCoord(-1000, y), p2 = toScreenCoord(1000, y);
+      const p1 = toScreenCoord(-halfArena, y), p2 = toScreenCoord(halfArena, y);
       ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
     }
   }
@@ -1276,15 +2864,16 @@ function render() {
   ctx.strokeStyle = '#475569';
   ctx.lineWidth = mmToPx(35);
   ctx.lineCap = 'square';
+  const boundary = Math.abs(STATE.walls[0].y1);
   for (const w of STATE.walls) {
-    if (Math.abs(w.x1) === 960 && Math.abs(w.x2) === 960) continue;
-    if (Math.abs(w.y1) === 960 && Math.abs(w.y2) === 960) continue;
+    if (Math.abs(w.x1) === boundary && Math.abs(w.x2) === boundary) continue;
+    if (Math.abs(w.y1) === boundary && Math.abs(w.y2) === boundary) continue;
     const p1 = toScreenCoord(w.x1, w.y1);
     const p2 = toScreenCoord(w.x2, w.y2);
     ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
   }
 
-  // Robot Body
+  // Robot
   const sc = toScreenCoord(STATE.robot.x, STATE.robot.y);
   const rWidth = mmToPx(190), rLength = mmToPx(200);
 
@@ -1332,13 +2921,17 @@ function render() {
 
 function updateSensorsHUD() {
   hudPos.innerText = `X: ${Math.round(STATE.robot.x)}, Y: ${Math.round(STATE.robot.y)}`;
-  hudHeading.innerText = `${normalizeAngle(Math.round(STATE.robot.angle))}°`;
+  hudHeading.innerText = `${getHeading()}°`;
   const dist = measureForwardDistance();
   hudDistance.innerText = dist < 2000 ? `${Math.round(dist)} mm` : '> 2000 mm';
   hudBumper.innerText = STATE.robot.bumperPressed ? '🚨 ON (مضغوط)' : 'OFF (سليم)';
   hudBumper.style.color = STATE.robot.bumperPressed ? '#ef4444' : '#38bdf8';
   hudMagnet.innerText = STATE.robot.magnetEnergized ? '⚡ BOOST' : 'OFF';
   hudMagnet.style.color = STATE.robot.magnetEnergized ? '#f59e0b' : '#38bdf8';
+}
+
+function getHeading() {
+  return Math.round(normalizeAngle(STATE.robot.angle - STATE.robot.headingOffset));
 }
 
 function measureForwardDistance() {
@@ -1361,12 +2954,22 @@ function measureForwardDistance() {
       if (d < minD) minD = d;
     }
   }
+  for (const disk of STATE.disks) {
+    const offsetX = disk.x - rx, offsetY = disk.y - ry;
+    const along = offsetX * Math.cos(rad) + offsetY * Math.sin(rad);
+    if (along < 0) continue;
+    const across = Math.abs(offsetX * Math.sin(rad) - offsetY * Math.cos(rad));
+    if (across > disk.radius) continue;
+    const hitDistance = along - Math.sqrt(disk.radius ** 2 - across ** 2);
+    if (hitDistance >= 0 && hitDistance < minD) minD = hitDistance;
+  }
   return Math.max(0, minD - 100);
 }
 
 function checkCollision(nx, ny) {
   const robotRadius = 95;
-  if (Math.abs(nx) >= 950 - robotRadius || Math.abs(ny) >= 950 - robotRadius) return true;
+  const boundary = Math.abs(STATE.walls[0].y1) - 10;
+  if (Math.abs(nx) >= boundary - robotRadius || Math.abs(ny) >= boundary - robotRadius) return true;
   for (const w of STATE.walls) {
     const px = w.x2 - w.x1, py = w.y2 - w.y1;
     const l2 = px * px + py * py;
@@ -1400,192 +3003,659 @@ function updateMagnetDisks() {
 }
 
 /* =========================================================================
-   Execution Controller (Handles Both Blocks & Python)
+   Block Execution Engine
    ========================================================================= */
-const sleep = (ms) => new Promise((resolve, reject) => {
+const sleep = (ms, advanceDrive = true) => new Promise((resolve, reject) => {
   if (!STATE.isRunning) return reject(new Error('STOPPED'));
-  const timer = setTimeout(resolve, ms / STATE.speedMultiplier);
+  let elapsed = 0;
+  let timer;
+  const tickDuration = Math.min(14, ms);
+  const tick = () => {
+    if (!STATE.isRunning) {
+      reject(new Error('STOPPED'));
+      return;
+    }
+    if (advanceDrive && STATE.robot.driveDirection) {
+      advanceDriveStep(STATE.robot.driveDirection, 1.4 * Math.max(0, STATE.robot.driveVelocity) / 100);
+    }
+    elapsed += tickDuration;
+    if (elapsed >= ms) {
+      resolve();
+    } else {
+      timer = setTimeout(tick, tickDuration / STATE.speedMultiplier);
+    }
+  };
+  timer = setTimeout(tick, tickDuration / STATE.speedMultiplier);
   STATE.abortController = () => {
     clearTimeout(timer);
     reject(new Error('STOPPED'));
   };
 });
 
+function advanceDriveStep(dir, step) {
+  const sign = dir === FORWARD ? 1 : -1;
+  const rad = degToRad(STATE.robot.angle);
+  const nx = STATE.robot.x + Math.cos(rad) * step * sign;
+  const ny = STATE.robot.y + Math.sin(rad) * step * sign;
+
+  if (checkCollision(nx, ny)) {
+    STATE.robot.bumperPressed = true;
+    STATE.robot.driveDirection = null;
+    updateSensorsHUD();
+    render();
+    appendConsole('⚠️ تحذير: اصطدام بالجدار! توقف المحرك.', 'warn');
+    return false;
+  }
+
+  STATE.robot.bumperPressed = false;
+  if (STATE.robot.penDown) {
+    STATE.lines.push({
+      x1: STATE.robot.x, y1: STATE.robot.y,
+      x2: nx, y2: ny,
+      color: STATE.robot.penColor,
+      width: STATE.robot.penWidth
+    });
+  }
+  STATE.robot.x = nx;
+  STATE.robot.y = ny;
+  updateMagnetDisks();
+  updateSensorsHUD();
+  render();
+  return true;
+}
+
 async function runDriveFor(dir, dist) {
-  const sign = (dir === FORWARD) ? 1 : -1;
+  STATE.robot.driveDirection = null;
   const totalDist = Math.abs(dist);
   let traveled = 0;
-  const stepSize = 8;
+  const stepSize = 1.4 * Math.max(0, STATE.robot.driveVelocity) / 100;
 
   while (traveled < totalDist) {
     if (!STATE.isRunning) break;
+    if (stepSize === 0) {
+      await sleep(14, false);
+      continue;
+    }
     const step = Math.min(stepSize, totalDist - traveled);
-    const rad = degToRad(STATE.robot.angle);
-    const nx = STATE.robot.x + Math.cos(rad) * step * sign;
-    const ny = STATE.robot.y + Math.sin(rad) * step * sign;
-
-    if (checkCollision(nx, ny)) {
-      STATE.robot.bumperPressed = true;
-      updateSensorsHUD();
-      render();
-      appendConsole('⚠️ تحذير: اصطدام بالجدار! توقف المحرك.', 'warn');
-      break;
-    } else {
-      STATE.robot.bumperPressed = false;
-    }
-
-    if (STATE.robot.penDown) {
-      STATE.lines.push({
-        x1: STATE.robot.x, y1: STATE.robot.y,
-        x2: nx, y2: ny,
-        color: STATE.robot.penColor,
-        width: STATE.robot.penWidth
-      });
-    }
-
-    STATE.robot.x = nx;
-    STATE.robot.y = ny;
+    if (!advanceDriveStep(dir, step)) break;
     traveled += step;
-    updateMagnetDisks();
-    updateSensorsHUD();
-    render();
-    await sleep(14);
+    await sleep(14, false);
   }
 }
 
 async function runTurnFor(dir, angle) {
+  STATE.robot.driveDirection = null;
   const sign = (dir === RIGHT) ? -1 : 1;
   const totalAngle = Math.abs(angle);
   let turned = 0;
-  const stepDeg = 4;
+  const stepDeg = 4 * Math.max(0, STATE.robot.turnVelocity) / 100;
 
   while (turned < totalAngle) {
     if (!STATE.isRunning) break;
+    if (stepDeg === 0) {
+      await sleep(14, false);
+      continue;
+    }
     const step = Math.min(stepDeg, totalAngle - turned);
     STATE.robot.angle = normalizeAngle(STATE.robot.angle + step * sign);
     turned += step;
     updateMagnetDisks();
     updateSensorsHUD();
     render();
-    await sleep(14);
+    await sleep(14, false);
   }
 }
 
-// Blocks Execution
-async function executeBlocksMode() {
-  const placedBlocks = [...workspaceDropzone.querySelectorAll('.placed-block')];
-  if (placedBlocks.length === 0) {
-    appendConsole('⚠️ مساحة العمل فارغة! اسحب بعض اللبنات أولاً.', 'warn');
+async function runDriveUntilObstacle(targetDist) {
+  while (measureForwardDistance() > targetDist) {
+    if (!STATE.isRunning) break;
+    await runDriveFor(FORWARD, 15);
+  }
+}
+
+async function runDriveUntilBumper() {
+  while (!STATE.robot.bumperPressed) {
+    if (!STATE.isRunning) break;
+    await runDriveFor(FORWARD, 20);
+  }
+}
+
+function evaluateComparison(conditionSlot) {
+  const card = conditionSlot?.querySelector(':scope > .placed-block > .block-card[data-type="compare"]');
+  if (!card) {
+    throw new Error('أضف لبنة مقارنة إلى خانة الشرط قبل تشغيل البرنامج.');
+  }
+
+  const readOperand = (side) => {
+    const source = card.querySelector(`[data-field="${side}-source"]`).value;
+    if (source === 'value') {
+      const input = card.querySelector(`[data-field="${side}"]`);
+      return evaluateNumericExpression(
+        input.dataset.mathExpression || input.value,
+        'القيمة في لبنة المقارنة'
+      );
+    }
+    if (source === 'variable') {
+      const name = validateIdentifier(
+        card.querySelector(`[data-field="${side}-variable"]`).value,
+        'المتغير'
+      );
+      if (!Object.hasOwn(STATE.variables, name)) {
+        throw new Error(`المتغير ${name} غير معرّف قبل استخدامه.`);
+      }
+      return STATE.variables[name];
+    }
+
+    const sensorValues = {
+      x: STATE.robot.x,
+      y: STATE.robot.y,
+      distance: measureForwardDistance(),
+      heading: getHeading()
+    };
+    return sensorValues[source];
+  };
+
+  const left = readOperand('left');
+  const right = readOperand('right');
+  const operator = card.querySelector('[data-field="operator"]').value;
+  switch (operator) {
+    case 'lt': return left < right;
+    case 'lte': return left <= right;
+    case 'eq': return left === right;
+    case 'neq': return left !== right;
+    case 'gte': return left >= right;
+    case 'gt': return left > right;
+    default: throw new Error('عملية المقارنة المحددة غير صالحة.');
+  }
+}
+
+function findEyeDisk(sensor) {
+  if (sensor === 'down') {
+    return STATE.disks
+      .map(disk => ({
+        disk,
+        distance: Math.max(0, Math.hypot(disk.x - STATE.robot.x, disk.y - STATE.robot.y) - disk.radius)
+      }))
+      .filter(item => item.distance <= 25)
+      .sort((a, b) => a.distance - b.distance)[0]?.disk || null;
+  }
+
+  const rad = degToRad(STATE.robot.angle);
+  const directionX = Math.cos(rad), directionY = Math.sin(rad);
+  const eyeX = STATE.robot.x + directionX * 100;
+  const eyeY = STATE.robot.y + directionY * 100;
+  return STATE.disks
+    .map(disk => {
+      const offsetX = disk.x - eyeX, offsetY = disk.y - eyeY;
+      const along = offsetX * directionX + offsetY * directionY;
+      const across = Math.abs(offsetX * directionY - offsetY * directionX);
+      return { disk, distance: along - disk.radius, across };
+    })
+    .filter(item => item.distance >= 0 && item.across <= item.disk.radius + 35)
+    .sort((a, b) => a.distance - b.distance)[0]?.disk || null;
+}
+
+function eyeSeesObject(sensor) {
+  const disk = findEyeDisk(sensor);
+  if (disk) {
+    const distance = sensor === 'down'
+      ? Math.max(0, Math.hypot(disk.x - STATE.robot.x, disk.y - STATE.robot.y) - disk.radius)
+      : Math.max(0, Math.hypot(disk.x - (STATE.robot.x + Math.cos(degToRad(STATE.robot.angle)) * 100), disk.y - (STATE.robot.y + Math.sin(degToRad(STATE.robot.angle)) * 100)) - disk.radius);
+    if (distance <= (sensor === 'down' ? 25 : 150)) return true;
+  }
+  return sensor === 'front' && measureForwardDistance() <= 150;
+}
+
+function eyeSeesColor(sensor, color) {
+  const disk = findEyeDisk(sensor);
+  if (!disk) return false;
+  if (sensor === 'front') {
+    const rad = degToRad(STATE.robot.angle);
+    const eyeX = STATE.robot.x + Math.cos(rad) * 100;
+    const eyeY = STATE.robot.y + Math.sin(rad) * 100;
+    if (Math.hypot(disk.x - eyeX, disk.y - eyeY) - disk.radius > 400) return false;
+  }
+  const colors = { red: '#ef4444', green: '#10b981', blue: '#3b82f6' };
+  return disk.color.toLowerCase() === colors[color];
+}
+
+function evaluateCondition(conditionSlot) {
+  const block = conditionSlot?.querySelector(':scope > .placed-block');
+  const card = block?.querySelector(':scope > .block-card[data-type]');
+  if (!card) {
+    throw new Error('أضف لبنة شرط إلى خانة الشرط قبل تشغيل البرنامج.');
+  }
+
+  const type = card.dataset.type;
+  const field = name => card.querySelector(`[data-field="${name}"]`)?.value;
+  switch (type) {
+    case 'compare':
+      return evaluateComparison(conditionSlot);
+    case 'eye_near':
+      return eyeSeesObject(field('sensor'));
+    case 'eye_color':
+      return eyeSeesColor(field('sensor'), field('color'));
+    case 'bumper_pressed':
+      return STATE.robot.bumperPressed;
+    case 'logic_and': {
+      const slots = card.querySelectorAll('.condition-slot');
+      const left = evaluateCondition(slots[0]);
+      const right = evaluateCondition(slots[1]);
+      return left && right;
+    }
+    case 'logic_or': {
+      const slots = card.querySelectorAll('.condition-slot');
+      const left = evaluateCondition(slots[0]);
+      const right = evaluateCondition(slots[1]);
+      return left || right;
+    }
+    case 'logic_not':
+      return !evaluateCondition(card.querySelector('.condition-slot'));
+    default:
+      throw new Error('لبنة الشرط المحددة غير مدعومة.');
+  }
+}
+
+function comparisonCode(conditionSlot) {
+  const card = conditionSlot?.querySelector(':scope > .placed-block > .block-card[data-type="compare"]');
+  if (!card) return 'False';
+
+  const sourceNames = {
+    x: 'location.position(X, MM)',
+    y: 'location.position(Y, MM)',
+    distance: 'distance.object_distance(MM)',
+    heading: 'drivetrain.heading(DEGREES)'
+  };
+  const operators = { lt: '<', lte: '<=', eq: '==', neq: '!=', gte: '>=', gt: '>' };
+  const operand = (side) => {
+    const source = card.querySelector(`[data-field="${side}-source"]`)?.value;
+    if (source === 'variable') {
+      return safePythonIdentifier(card.querySelector(`[data-field="${side}-variable"]`)?.value);
+    }
+    if (source && source !== 'value') return sourceNames[source] || '0';
+    const input = card.querySelector(`[data-field="${side}"]`);
+    return pythonNumericExpression(input?.dataset.mathExpression || input?.value || '0');
+  };
+  const operator = card.querySelector('[data-field="operator"]')?.value;
+  return `${operand('left')} ${operators[operator] || '=='} ${operand('right')}`;
+}
+
+function conditionCode(conditionSlot) {
+  const card = conditionSlot?.querySelector(':scope > .placed-block > .block-card[data-type]');
+  if (!card) return 'False';
+  const field = name => card.querySelector(`[data-field="${name}"]`)?.value;
+  switch (card.dataset.type) {
+    case 'compare': return comparisonCode(conditionSlot);
+    case 'eye_near':
+      return `${field('sensor') === 'down' ? 'down_eye' : 'front_eye'}.near_object()`;
+    case 'eye_color': {
+      const sensor = field('sensor') === 'down' ? 'down_eye' : 'front_eye';
+      const color = { red: 'RED', green: 'GREEN', blue: 'BLUE' }[field('color')] || 'RED';
+      return `${sensor}.detects(${color})`;
+    }
+    case 'bumper_pressed':
+      return `bumper.${field('side') === 'right' ? 'right' : 'left'}.pressing()`;
+    case 'logic_and':
+      return `(${conditionCode(card.querySelectorAll('.condition-slot')[0])} and ${conditionCode(card.querySelectorAll('.condition-slot')[1])})`;
+    case 'logic_or':
+      return `(${conditionCode(card.querySelectorAll('.condition-slot')[0])} or ${conditionCode(card.querySelectorAll('.condition-slot')[1])})`;
+    case 'logic_not':
+      return `not (${conditionCode(card.querySelector('.condition-slot'))})`;
+    default: return 'False';
+  }
+}
+
+function safePythonIdentifier(value) {
+  let identifier = String(value || '').trim().replace(/[^A-Za-z0-9_]/g, '_');
+  if (!identifier || /^[0-9]/.test(identifier)) identifier = `_${identifier || 'value'}`;
+  return identifier;
+}
+
+function customParameterNames(text) {
+  return String(text || '').split(',').map(name => name.trim()).filter(Boolean);
+}
+
+function pythonNumericExpression(value) {
+  const raw = String(value ?? '').trim();
+  if (raw.startsWith(MATH_EXPRESSION_PREFIX)) {
+    const expression = parseMathExpression(raw);
+    return `(${pythonNumericExpression(expression.left)} ${MATH_OPERATORS[expression.type]} ${pythonNumericExpression(expression.right)})`;
+  }
+  return raw && Number.isFinite(Number(raw)) ? raw : safePythonIdentifier(raw);
+}
+
+function pythonLinesForBlock(block, indent = 0) {
+  const prefix = ' '.repeat(indent);
+  const card = block.querySelector('.block-card[data-type]');
+  if (block.classList.contains('c-block-custom-definition')) {
+    const name = safePythonIdentifier(card.querySelector('[data-field="name"]')?.value);
+    const params = customParameterNames(card.querySelector('[data-field="params"]')?.value)
+      .map(safePythonIdentifier);
+    const body = [...block.querySelector('.c-block-body').children]
+      .filter(child => child.classList.contains('placed-block'));
+    const bodyLines = body.flatMap(child => pythonLinesForBlock(child, indent + 4));
+    return [
+      `${prefix}def ${name}(${params.join(', ')}):`,
+      ...(bodyLines.length ? bodyLines : [`${prefix}    pass`])
+    ];
+  }
+  if (block.classList.contains('c-block-conditional')) {
+    const condition = conditionCode(block.querySelector('.condition-slot'));
+    const thenBody = [...block.querySelector('.c-block-body').children]
+      .filter(child => child.classList.contains('placed-block'));
+    const thenLines = thenBody.flatMap(child => pythonLinesForBlock(child, indent + 4));
+    const lines = [`${prefix}if ${condition}:`, ...(thenLines.length ? thenLines : [`${prefix}    pass`])];
+    const elseBody = block.querySelector('.c-block-else-body');
+    if (elseBody) {
+      const elseBlocks = [...elseBody.children].filter(child => child.classList.contains('placed-block'));
+      const elseLines = elseBlocks.flatMap(child => pythonLinesForBlock(child, indent + 4));
+      lines.push(`${prefix}else:`, ...(elseLines.length ? elseLines : [`${prefix}    pass`]));
+    }
+    return lines;
+  }
+  if (block.classList.contains('c-block-container')) {
+    const body = block.querySelector('.c-block-body');
+    const children = [...body.children].filter(child => child.classList.contains('placed-block'));
+    const isUntil = block.classList.contains('c-block-until');
+    const isForever = block.classList.contains('c-block-forever');
+    const condition = conditionCode(block.querySelector('.condition-slot'));
+    const times = block.querySelector('[data-field="times"]')?.value || '1';
+    const header = isUntil
+      ? `while not (${condition}):`
+      : isForever
+        ? 'while True:'
+        : `for repeat_count in range(${times}):`;
+    const nestedLines = children.flatMap(child => pythonLinesForBlock(child, indent + 4));
+    return [`${prefix}${header}`, ...(nestedLines.length ? nestedLines : [`${prefix}    pass`])];
+  }
+  if (!card) return [];
+
+  const field = name => {
+    const input = card.querySelector(`[data-field="${name}"]`);
+    return input?.dataset.mathExpression || input?.value || '';
+  };
+  const direction = value => value === 'REVERSE' ? 'REVERSE' : 'FORWARD';
+  const turnDirection = value => value === 'LEFT' ? 'LEFT' : 'RIGHT';
+  const linesByType = {
+    drive_for: [`drivetrain.drive_for(${direction(field('dir'))}, ${pythonNumericExpression(field('dist'))}, MM)`],
+    drive_forward: ['drivetrain.drive(FORWARD)', 'while not bumper.pressing():', '    wait(20, MSEC)', 'drivetrain.stop()'],
+    drive_start: ['drivetrain.drive(FORWARD)'],
+    drive_stop: ['drivetrain.stop()'],
+    turn_for: [`drivetrain.turn_for(${turnDirection(field('dir'))}, ${pythonNumericExpression(field('angle'))}, DEGREES)`],
+    set_speed: [`drivetrain.set_drive_velocity(${pythonNumericExpression(field('speed'))}, PERCENT)`],
+    set_turn_speed: [`drivetrain.set_turn_velocity(${pythonNumericExpression(field('speed'))}, PERCENT)`],
+    set_heading: [`drivetrain.set_heading(${pythonNumericExpression(field('heading'))}, DEGREES)`],
+    pen_move: [`pen.move(${field('action') === 'UP' ? 'UP' : 'DOWN'})`],
+    pen_color: [`pen.set_pen_color(${JSON.stringify(field('color'))})`],
+    pen_width: [`pen.set_pen_width(${pythonNumericExpression(field('width'))}, MM)`],
+    set_variable: [`${safePythonIdentifier(field('name'))} = ${pythonNumericExpression(field('value'))}`],
+    change_variable: [`${safePythonIdentifier(field('name'))} += ${pythonNumericExpression(field('value'))}`],
+    custom_call: [
+      `${safePythonIdentifier(field('name'))}(${field('args').split(',').map(value => value.trim()).filter(Boolean).map(value => /^[A-Za-z_][A-Za-z0-9_]*$/.test(value) ? value : value || '0').join(', ')})`
+    ],
+    wait_sec: [`wait(${pythonNumericExpression(field('sec'))}, SECONDS)`],
+    wait_until: [`while not (${conditionCode(block.querySelector('.condition-slot'))}):`, '    wait(20, MSEC)'],
+    drive_until_obstacle: [
+      `while distance.object_distance(MM) > ${pythonNumericExpression(field('dist'))}:`,
+      '    drivetrain.drive(FORWARD)',
+      'drivetrain.stop()'
+    ],
+    drive_until_bumper: [
+      'while not bumper.pressing():',
+      '    drivetrain.drive(FORWARD)',
+      'drivetrain.stop()'
+    ],
+    magnet_action: [`magnet.energize(${field('action') === 'DROP' ? 'DROP' : 'BOOST'})`],
+    print_msg: [`print(${field('msg').startsWith(MATH_EXPRESSION_PREFIX)
+      ? pythonNumericExpression(field('msg'))
+      : /^[A-Za-z_][A-Za-z0-9_]*$/.test(field('msg')) && isVariableDeclaredInWorkspace(field('msg'))
+        ? safePythonIdentifier(field('msg'))
+        : JSON.stringify(field('msg'))})`],
+    set_cursor_next_row: ['print()'],
+    clear_console: ['clear_console()']
+  };
+  return (linesByType[card.dataset.type] || [`# ${card.dataset.type}`])
+    .map(line => `${prefix}${line}`);
+}
+
+function updateCodeViewer() {
+  if (!generatedCode) return;
+  const blocks = [...workspaceDropzone.children]
+    .filter(block => block.classList.contains('placed-block'));
+  const definitions = blocks.filter(block => block.classList.contains('c-block-custom-definition'));
+  const program = blocks.filter(block => !block.classList.contains('c-block-custom-definition'));
+  const lines = [...definitions, ...program].flatMap(block => pythonLinesForBlock(block));
+  generatedCode.textContent = lines.length
+    ? `# Python preview generated from blocks\n${lines.join('\n')}`
+    : '# أضف لبنات إلى مساحة العمل لعرض الكود';
+}
+
+workspaceDropzone.addEventListener('input', updateCodeViewer);
+workspaceDropzone.addEventListener('change', updateCodeViewer);
+document.getElementById('blocksPalette').addEventListener('input', updateVariableReporters);
+document.getElementById('blocksPalette').addEventListener('change', updateVariableReporters);
+workspaceDropzone.addEventListener('input', updateVariableReporters);
+workspaceDropzone.addEventListener('change', updateVariableReporters);
+new MutationObserver(() => {
+  updateCodeViewer();
+  updateVariableReporters();
+}).observe(workspaceDropzone, {
+  childList: true,
+  subtree: true
+});
+updateVariableReporters();
+
+async function executeSingleBlock(blockElement) {
+  if (blockElement.classList.contains('c-block-container')) {
+    if (blockElement.classList.contains('c-block-custom-definition')) return;
+    const header = blockElement.querySelector('.c-block-header');
+    const body = blockElement.querySelector('.c-block-body');
+    const innerBlocks = [...body.children].filter(el => el.classList && el.classList.contains('placed-block'));
+
+    if (blockElement.classList.contains('c-block-conditional')) {
+      const conditionSlot = header.querySelector('.condition-slot');
+      const conditionMet = evaluateCondition(conditionSlot);
+      const selectedBody = conditionMet
+        ? body
+        : blockElement.querySelector('.c-block-else-body');
+      header.classList.add('block-active-exec');
+      try {
+        if (selectedBody) {
+          const branchBlocks = [...selectedBody.children]
+            .filter(el => el.classList && el.classList.contains('placed-block'));
+          for (const inner of branchBlocks) {
+            if (!STATE.isRunning) break;
+            await executeSingleBlock(inner);
+          }
+        }
+      } finally {
+        header.classList.remove('block-active-exec');
+      }
+      return;
+    }
+
+    const repeatUntil = blockElement.classList.contains('c-block-until');
+    const repeatForever = blockElement.classList.contains('c-block-forever');
+    const times = parseInt(header.querySelector('[data-field="times"]')?.value) || 1;
+    const conditionSlot = repeatUntil ? header.querySelector('.condition-slot') : null;
+    if (repeatUntil) {
+      evaluateCondition(conditionSlot);
+      appendConsole('🔄 بدء التكرار حتى يتحقق الشرط...', 'info');
+    } else if (repeatForever) {
+      appendConsole('🔄 بدء التكرار إلى الأبد...', 'info');
+    } else {
+      appendConsole(`🔄 بدء حلقة تكرار (${times} مرات)...`, 'info');
+    }
+    header.classList.add('block-active-exec');
+
+    try {
+      let iteration = 0;
+      while (STATE.isRunning && (repeatUntil
+        ? !evaluateCondition(conditionSlot)
+        : repeatForever || iteration < times)) {
+        for (const inner of innerBlocks) {
+          if (!STATE.isRunning) break;
+          await executeSingleBlock(inner);
+        }
+        iteration++;
+        if ((repeatUntil || repeatForever) && STATE.isRunning) await sleep(20);
+      }
+    } finally {
+      header.classList.remove('block-active-exec');
+    }
     return;
   }
 
-  for (let i = 0; i < placedBlocks.length; i++) {
-    if (!STATE.isRunning) break;
-    const blk = placedBlocks[i];
-    const card = blk.querySelector('.block-card');
-    const type = card.dataset.type;
-
-    if (type === 'repeat_times') {
-      const times = parseInt(card.querySelector('[data-field="times"]').value) || 1;
-      const subBlocks = placedBlocks.slice(i + 1);
-      appendConsole(`🔄 تكرار (${times} مرات)...`, 'info');
-      card.classList.add('block-active-exec');
-
-      for (let r = 0; r < times; r++) {
-        if (!STATE.isRunning) break;
-        for (let s = 0; s < subBlocks.length; s++) {
-          if (!STATE.isRunning) break;
-          await executeSingleBlock(subBlocks[s]);
-        }
-      }
-      card.classList.remove('block-active-exec');
-      break;
-    } else {
-      await executeSingleBlock(blk);
-    }
-  }
-}
-
-async function executeSingleBlock(blockElement) {
   const card = blockElement.querySelector('.block-card');
+  if (!card) return;
   const type = card.dataset.type;
+
+  // Visual execution highlight
   card.classList.add('block-active-exec');
 
   try {
     switch (type) {
       case 'drive_for': {
         const dir = card.querySelector('[data-field="dir"]').value;
-        const dist = parseFloat(card.querySelector('[data-field="dist"]').value) || 200;
-        appendConsole(`تحرك ${dir === 'FORWARD' ? 'للأمام' : 'للخلف'} ${dist} ملم`);
+        const dist = readNumericField(card, 'dist', 'المسافة');
+        appendConsole(`تنفيذ: تحرك ${dir === 'FORWARD' ? 'للأمام' : 'للخلف'} ${dist} ملم`);
         await runDriveFor(dir, dist);
+        break;
+      }
+      case 'drive_forward': {
+        appendConsole('تنفيذ: تحرك للأمام باستمرار حتى الإيقاف أو الاصطدام');
+        await runDriveFor(FORWARD, Number.POSITIVE_INFINITY);
+        break;
+      }
+      case 'drive_start': {
+        STATE.robot.driveDirection = FORWARD;
+        STATE.robot.bumperPressed = false;
+        appendConsole('تنفيذ: بدء القيادة للأمام');
+        break;
+      }
+      case 'drive_stop': {
+        STATE.robot.driveDirection = null;
+        appendConsole('تنفيذ: إيقاف القيادة');
         break;
       }
       case 'turn_for': {
         const dir = card.querySelector('[data-field="dir"]').value;
-        const angle = parseFloat(card.querySelector('[data-field="angle"]').value) || 90;
-        appendConsole(`استدر ${dir === 'RIGHT' ? 'لليمين' : 'لليسار'} ${angle} درجة`);
+        const angle = readNumericField(card, 'angle', 'الزاوية');
+        appendConsole(`تنفيذ: استدر ${dir === 'RIGHT' ? 'لليمين' : 'لليسار'} ${angle} درجة`);
         await runTurnFor(dir, angle);
         break;
       }
       case 'set_speed': {
-        const speed = parseFloat(card.querySelector('[data-field="speed"]').value) || 80;
+        const speed = Math.min(100, Math.max(0, readNumericField(card, 'speed', 'السرعة')));
         STATE.robot.driveVelocity = speed;
-        appendConsole(`ضبط السرعة: ${speed}%`);
+        appendConsole(`تنفيذ: ضبط سرعة القيادة إلى ${speed}%`);
+        break;
+      }
+      case 'set_turn_speed': {
+        const speed = Math.min(100, Math.max(0, readNumericField(card, 'speed', 'سرعة الالتفاف')));
+        STATE.robot.turnVelocity = speed;
+        appendConsole(`تنفيذ: ضبط سرعة الالتفاف إلى ${speed}%`);
+        break;
+      }
+      case 'set_heading': {
+        const heading = normalizeAngle(readNumericField(card, 'heading', 'زاوية المواجهة'));
+        STATE.robot.headingOffset = STATE.robot.angle - heading;
+        updateSensorsHUD();
+        appendConsole(`تنفيذ: ضبط زاوية المواجهة إلى ${heading}°`);
         break;
       }
       case 'pen_move': {
         const action = card.querySelector('[data-field="action"]').value;
         STATE.robot.penDown = (action === 'DOWN');
-        appendConsole(`القلم: ${action === 'DOWN' ? 'إنزال (رسم)' : 'رفع'}`);
+        appendConsole(`تنفيذ: القلم ${action === 'DOWN' ? 'للأسفل' : 'للأعلى'}`);
         render();
         break;
       }
       case 'pen_color': {
         const color = card.querySelector('[data-field="color"]').value;
         STATE.robot.penColor = color;
-        appendConsole(`تغيير لون القلم`);
+        appendConsole(`تنفيذ: تغيير لون القلم`);
         render();
         break;
       }
+      case 'pen_width': {
+        const width = Math.min(10, Math.max(1, readNumericField(card, 'width', 'عرض القلم')));
+        STATE.robot.penWidth = width;
+        card.querySelector('[data-field="width"]').value = width;
+        appendConsole(`تنفيذ: ضبط عرض القلم إلى ${width} ملم`);
+        render();
+        break;
+      }
+      case 'set_variable': {
+        const name = validateIdentifier(card.querySelector('[data-field="name"]').value, 'المتغير');
+        const value = readNumericField(card, 'value', 'قيمة المتغير');
+        STATE.variables[name] = value;
+        appendConsole(`تنفيذ: تعيين ${name} إلى ${value}`);
+        break;
+      }
+      case 'change_variable': {
+        const name = validateIdentifier(card.querySelector('[data-field="name"]').value, 'المتغير');
+        const value = readNumericField(card, 'value', 'قيمة التغيير');
+        STATE.variables[name] = (STATE.variables[name] || 0) + value;
+        appendConsole(`تنفيذ: تغيير ${name} بمقدار ${value}؛ القيمة الحالية ${STATE.variables[name]}`);
+        break;
+      }
+      case 'custom_call': {
+        await executeCustomCall(card);
+        break;
+      }
       case 'wait_sec': {
-        const sec = parseFloat(card.querySelector('[data-field="sec"]').value) || 1;
-        appendConsole(`انتظار ${sec} ثانية`);
+        const sec = readNumericField(card, 'sec', 'مدة الانتظار');
+        appendConsole(`تنفيذ: انتظر ${sec} ثانية`);
         await sleep(sec * 1000);
+        break;
+      }
+      case 'wait_until': {
+        const conditionSlot = card.querySelector('.condition-slot');
+        evaluateCondition(conditionSlot);
+        appendConsole('تنفيذ: انتظر حتى يتحقق الشرط');
+        while (STATE.isRunning && !evaluateCondition(conditionSlot)) {
+          if (STATE.robot.bumperPressed && !STATE.robot.driveDirection) {
+            appendConsole('⚠️ توقف الروبوت عند الجدار قبل تحقق الشرط.', 'warn');
+            break;
+          }
+          await sleep(14);
+        }
         break;
       }
       case 'magnet_action': {
         const act = card.querySelector('[data-field="action"]').value;
         STATE.robot.magnetEnergized = (act === 'BOOST');
-        appendConsole(`مغناطيس: ${act}`);
+        appendConsole(`تنفيذ: مغناطيس ${act}`);
         updateMagnetDisks();
         updateSensorsHUD();
         render();
         break;
       }
       case 'drive_until_obstacle': {
-        const dist = parseFloat(card.querySelector('[data-field="dist"]').value) || 150;
-        appendConsole(`تحرك حتى يقترب الجدار لمسافة ${dist} ملم`);
-        while (measureForwardDistance() > dist) {
-          if (!STATE.isRunning) break;
-          await runDriveFor(FORWARD, 15);
-        }
+        const dist = readNumericField(card, 'dist', 'المسافة');
+        appendConsole(`تنفيذ: تحرك للأمام حتى يقترب الجدار لمسافة ${dist} ملم`);
+        await runDriveUntilObstacle(dist);
         break;
       }
       case 'drive_until_bumper': {
-        appendConsole(`تحرك حتى يلمس الصدام`);
-        while (!STATE.robot.bumperPressed) {
-          if (!STATE.isRunning) break;
-          await runDriveFor(FORWARD, 20);
-        }
+        appendConsole(`تنفيذ: تحرك للأمام حتى يلمس الصدام الجدار`);
+        await runDriveUntilBumper();
         break;
       }
       case 'print_msg': {
-        const msg = card.querySelector('[data-field="msg"]').value;
-        appendConsole(msg);
+        const input = card.querySelector('[data-field="msg"]');
+        const msg = input.dataset.mathExpression || input.value;
+        const output = msg.startsWith(MATH_EXPRESSION_PREFIX)
+          ? evaluateNumericExpression(msg, 'قيمة الطباعة')
+          : /^[A-Za-z_][A-Za-z0-9_]*$/.test(msg.trim()) && isVariableDeclaredInWorkspace(msg.trim())
+            ? evaluateNumericExpression(msg.trim(), 'المتغير المطلوب طباعته')
+            : msg;
+        appendConsole(output);
         break;
       }
       case 'set_cursor_next_row': {
-        appendConsole(''); // ينزل إلى الصف التالي
+        appendConsole(''); // ينزل سطراً جديداً (الصف التالي)
         break;
       }
       case 'clear_console': {
@@ -1598,160 +3668,115 @@ async function executeSingleBlock(blockElement) {
   }
 }
 
-// Python Code Execution Engine
-async function executePythonMode() {
-  const code = codeEditor.value.trim();
-  if (!code) {
-    appendConsole('يرجى كتابة كود بايثون أولاً!', 'warn');
+function getCustomDefinition(name) {
+  const definitions = [...workspaceDropzone.querySelectorAll('.c-block-custom-definition')];
+  return definitions.find(definition => {
+    const card = definition.querySelector('.block-card[data-type="custom_define"]');
+    return card?.querySelector('[data-field="name"]')?.value.trim() === name;
+  }) || null;
+}
+
+async function executeCustomCall(card) {
+  const name = validateIdentifier(card.querySelector('[data-field="name"]').value, 'الكتلة');
+  const definition = getCustomDefinition(name);
+  if (!definition) throw new Error(`تعريف الكتلة ${name} غير موجود.`);
+  const definitionCard = definition.querySelector('.block-card[data-type="custom_define"]');
+  const parameters = customParameterNames(definitionCard.querySelector('[data-field="params"]').value)
+    .map(parameter => validateIdentifier(parameter, 'المعامل'));
+  if (new Set(parameters).size !== parameters.length) {
+    throw new Error(`توجد معاملات مكررة في تعريف الكتلة ${name}.`);
+  }
+  const argumentText = card.querySelector('[data-field="args"]').value.trim();
+  const argumentTokens = argumentText ? argumentText.split(',').map(value => value.trim()) : [];
+  if (argumentTokens.length !== parameters.length) {
+    throw new Error(`الكتلة ${name} تحتاج إلى ${parameters.length} قيمة.`);
+  }
+  const values = argumentTokens.map(token => {
+    const number = Number(token);
+    if (token && Number.isFinite(number)) return number;
+    const variable = validateIdentifier(token, 'قيمة المعامل');
+    if (!Object.hasOwn(STATE.variables, variable)) {
+      throw new Error(`المتغير ${variable} غير معرّف.`);
+    }
+    return STATE.variables[variable];
+  });
+  if (STATE.customCallDepth >= 50) {
+    throw new Error('تجاوز استدعاء الكتل المخصصة الحد الآمن للتداخل.');
+  }
+
+  const previousParameters = parameters.map(parameter => ({
+    parameter,
+    existed: Object.hasOwn(STATE.variables, parameter),
+    value: STATE.variables[parameter]
+  }));
+  parameters.forEach((parameter, index) => {
+    STATE.variables[parameter] = values[index];
+  });
+  STATE.customCallDepth++;
+  try {
+    const body = [...definition.querySelector('.c-block-body').children]
+      .filter(child => child.classList.contains('placed-block'));
+    for (const block of body) {
+      if (!STATE.isRunning) break;
+      await executeSingleBlock(block);
+    }
+  } finally {
+    for (const previous of previousParameters) {
+      if (previous.existed) STATE.variables[previous.parameter] = previous.value;
+      else delete STATE.variables[previous.parameter];
+    }
+    STATE.customCallDepth--;
+  }
+}
+
+async function runBlocksProgram() {
+  if (STATE.isRunning) return;
+
+  const placedBlocks = [...workspaceDropzone.children].filter(el => 
+    el.classList && el.classList.contains('placed-block')
+  );
+
+  if (placedBlocks.length === 0) {
+    appendConsole('⚠️ مساحة العمل فارغة! اسحب بعض اللبنات أولاً.', 'warn');
     return;
   }
 
-  // Transpile Python to JS async
-  const js = transpilePython(code);
-  const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-
-  const runner = new AsyncFunction(
-    'drivetrain', 'pen', 'magnet', 'distance', 'left_bumper', 'right_bumper',
-    'wait', 'print', 'sleep',
-    'FORWARD', 'REVERSE', 'RIGHT', 'LEFT', 'MM', 'INCHES', 'DEGREES', 'PERCENT', 'SECONDS',
-    'DOWN', 'UP', 'BLACK', 'RED', 'GREEN', 'BLUE', 'BOOST', 'DROP',
-    `"use strict";\ntry {\n${js}\n} catch(e) { if(e.message !== "STOPPED") throw e; }`
-  );
-
-  const dtAPI = {
-    drive_for: async (dir, dist) => runDriveFor(dir, dist),
-    turn_for: async (dir, ang) => runTurnFor(dir, ang),
-    set_drive_velocity: (v) => { STATE.robot.driveVelocity = v; },
-    stop: () => {}
-  };
-  const penAPI = {
-    move: (dir) => { STATE.robot.penDown = (dir === DOWN); render(); },
-    set_pen_color: (c) => { STATE.robot.penColor = c; },
-    set_pen_width: (w) => { STATE.robot.penWidth = w; }
-  };
-  const magnetAPI = {
-    energize: (mode) => {
-      STATE.robot.magnetEnergized = (mode === BOOST);
-      updateMagnetDisks();
-      updateSensorsHUD();
-      render();
+  try {
+    const names = new Set();
+    for (const definition of workspaceDropzone.querySelectorAll('.c-block-custom-definition')) {
+      const card = definition.querySelector('.block-card[data-type="custom_define"]');
+      const name = validateIdentifier(card.querySelector('[data-field="name"]').value, 'الكتلة');
+      if (names.has(name)) throw new Error(`يوجد أكثر من تعريف للكتلة ${name}.`);
+      names.add(name);
+      const parameters = customParameterNames(card.querySelector('[data-field="params"]').value)
+        .map(parameter => validateIdentifier(parameter, 'المعامل'));
+      if (new Set(parameters).size !== parameters.length) {
+        throw new Error(`توجد معاملات مكررة في تعريف الكتلة ${name}.`);
+      }
     }
-  };
-  const distAPI = {
-    get_distance: () => measureForwardDistance(),
-    found_object: () => measureForwardDistance() < 1800
-  };
-  const bumpAPI = {
-    pressing: () => STATE.robot.bumperPressed
-  };
-
-  await runner(
-    dtAPI, penAPI, magnetAPI, distAPI, bumpAPI, bumpAPI,
-    async (dur) => sleep(dur * 1000), (m) => appendConsole(String(m)), sleep,
-    FORWARD, REVERSE, RIGHT, LEFT, MM, INCHES, DEGREES, PERCENT, SECONDS,
-    DOWN, UP, BLACK, RED, GREEN, BLUE, BOOST, DROP
-  );
-}
-
-function transpilePython(py) {
-  const lines = py.split('\n');
-  const jsLines = [];
-
-  for (let raw of lines) {
-    let line = raw;
-    const indentMatch = line.match(/^(\s*)/);
-    const indent = indentMatch ? indentMatch[1] : '';
-    let trimmed = line.trim();
-
-    if (trimmed.startsWith('#') || trimmed.length === 0) {
-      jsLines.push(line);
-      continue;
-    }
-
-    trimmed = trimmed.replace(/\bTrue\b/g, 'true')
-      .replace(/\bFalse\b/g, 'false')
-      .replace(/\bNone\b/g, 'null')
-      .replace(/\band\b/g, '&&')
-      .replace(/\bor\b/g, '||')
-      .replace(/\bnot\b/g, '!');
-
-    const forMatch = trimmed.match(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\((.*?)\)\s*:/);
-    if (forMatch) {
-      const v = forMatch[1];
-      jsLines.push(`${indent}for (let ${v} = 0; ${v} < ${forMatch[2]}; ${v}++) {`);
-      continue;
-    }
-
-    const whileMatch = trimmed.match(/^while\s+(.*?)\s*:/);
-    if (whileMatch) {
-      jsLines.push(`${indent}while (${whileMatch[1]}) {`);
-      jsLines.push(`${indent}  await sleep(10);`);
-      continue;
-    }
-
-    const ifMatch = trimmed.match(/^if\s+(.*?)\s*:/);
-    if (ifMatch) { jsLines.push(`${indent}if (${ifMatch[1]}) {`); continue; }
-    const elifMatch = trimmed.match(/^elif\s+(.*?)\s*:/);
-    if (elifMatch) { jsLines.push(`${indent}} else if (${elifMatch[1]}) {`); continue; }
-    if (trimmed === 'else:') { jsLines.push(`${indent}} else {`); continue; }
-
-    const asyncFns = ['drivetrain.drive_for', 'drivetrain.turn_for', 'wait'];
-    for (const fn of asyncFns) {
-      const reg = new RegExp(`(?<!await\\s+)${fn.replace('.', '\\.')}\\s*\\(`, 'g');
-      trimmed = trimmed.replace(reg, `await ${fn}(`);
-    }
-
-    jsLines.push(indent + trimmed + ';');
+  } catch (error) {
+    appendConsole(`❌ تعذر بدء البرنامج: ${error.message}`, 'error');
+    return;
   }
-
-  // Close blocks
-  const result = [];
-  const indentStack = [0];
-  for (let i = 0; i < jsLines.length; i++) {
-    const raw = jsLines[i];
-    if (raw.trim().length === 0 || raw.trim().startsWith('#')) {
-      result.push(raw);
-      continue;
-    }
-    const currentIndent = raw.search(/\S/);
-    while (indentStack.length > 1 && currentIndent < indentStack[indentStack.length - 1]) {
-      indentStack.pop();
-      result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
-    }
-    result.push(raw);
-    if (raw.trim().endsWith('{')) {
-      indentStack.push(currentIndent + 4);
-    }
-  }
-  while (indentStack.length > 1) {
-    indentStack.pop();
-    result.push(' '.repeat(indentStack[indentStack.length - 1]) + '}');
-  }
-
-  return result.join('\n');
-}
-
-async function startExecution() {
-  if (STATE.isRunning) return;
 
   STATE.isRunning = true;
+  STATE.customCallDepth = 0;
   btnRun.disabled = true;
   btnStop.disabled = false;
   statusDot.className = 'dot running';
-  statusText.innerText = 'جاري التنفيذ...';
-
-  appendConsole(`🚀 بدء تشغيل البرنامج (${CURRENT_MODE === 'blocks' ? 'اللبنات' : 'بايثون'})...`, 'info');
+  statusText.innerText = 'جاري تنفيذ اللبنات...';
+  appendConsole('🚀 بدء تشغيل برنامج اللبنات البرمجية...', 'info');
 
   try {
-    if (CURRENT_MODE === 'blocks') {
-      await executeBlocksMode();
-    } else {
-      await executePythonMode();
+    for (let i = 0; i < placedBlocks.length; i++) {
+      if (!STATE.isRunning) break;
+      if (placedBlocks[i].classList.contains('c-block-custom-definition')) continue;
+      await executeSingleBlock(placedBlocks[i]);
     }
-    appendConsole('✅ اكتمل التنفيذ بنجاح!', 'info');
+    appendConsole('✅ اكتمل تنفيذ جميع اللبنات بنجاح!', 'info');
   } catch (err) {
     if (err.message !== 'STOPPED') {
-      appendConsole(`❌ خطأ أثناء التشغيل: ${err.message}`, 'error');
+      appendConsole(`❌ حدث خطأ أثناء التنفيذ: ${err.message}`, 'error');
     }
   } finally {
     finishExecution();
@@ -1761,16 +3786,18 @@ async function startExecution() {
 function stopExecution() {
   if (!STATE.isRunning) return;
   STATE.isRunning = false;
+  STATE.robot.driveDirection = null;
   if (STATE.abortController) {
     STATE.abortController();
     STATE.abortController = null;
   }
-  appendConsole('⏹ تم إيقاف الروبوت يدوياً.', 'warn');
+  appendConsole('⏹ تم إيقاف الروبوت.', 'warn');
   finishExecution();
 }
 
 function finishExecution() {
   STATE.isRunning = false;
+  STATE.robot.driveDirection = null;
   btnRun.disabled = false;
   btnStop.disabled = true;
   statusDot.className = 'dot stopped';
@@ -1781,103 +3808,269 @@ function finishExecution() {
 }
 
 /* =========================================================================
-   Unified Presets (Loads into active mode)
+   Block Presets / Templates
    ========================================================================= */
-const UNIFIED_PRESETS = {
-  square: {
-    blocks: [
-      { type: 'pen_color', vals: { color: '#ef4444' } },
-      { type: 'pen_move', vals: { action: 'DOWN' } },
-      { type: 'repeat_times', vals: { times: '4' } },
-      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '250' } },
-      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } }
-    ],
-    python: `pen.set_pen_color(RED)\npen.move(DOWN)\nfor count in range(4):\n    drivetrain.drive_for(FORWARD, 250, MM)\n    drivetrain.turn_for(RIGHT, 90, DEGREES)\npen.move(UP)\nprint("تم رسم المربع!")\n`
-  },
-  polygon: {
-    blocks: [
-      { type: 'pen_color', vals: { color: '#3b82f6' } },
-      { type: 'pen_move', vals: { action: 'DOWN' } },
-      { type: 'repeat_times', vals: { times: '8' } },
-      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } },
-      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '135' } }
-    ],
-    python: `pen.set_pen_color(BLUE)\npen.move(DOWN)\nfor i in range(8):\n    drivetrain.drive_for(FORWARD, 200, MM)\n    drivetrain.turn_for(RIGHT, 135, DEGREES)\npen.move(UP)\n`
-  },
-  avoid_distance: {
-    blocks: [
-      { type: 'drive_until_obstacle', vals: { dist: '180' } },
-      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
-      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
-    ],
-    python: `while distance.get_distance(MM) > 180:\n    drivetrain.drive_for(FORWARD, 25, MM)\nprint("تم رصد عائق!")\ndrivetrain.turn_for(RIGHT, 90, DEGREES)\ndrivetrain.drive_for(FORWARD, 200, MM)\n`
-  },
-  bumper_bounce: {
-    blocks: [
-      { type: 'drive_until_bumper' },
-      { type: 'drive_for', vals: { dir: 'REVERSE', dist: '150' } },
-      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
-      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
-    ],
-    python: `while not left_bumper.pressing():\n    drivetrain.drive_for(FORWARD, 30, MM)\nprint("اصطدام!")\ndrivetrain.drive_for(REVERSE, 150, MM)\ndrivetrain.turn_for(RIGHT, 90, DEGREES)\n`
-  },
-  pickup_disk: {
-    playground: 'disk',
-    blocks: [
-      { type: 'drive_for', vals: { dir: 'FORWARD', dist: '700' } },
-      { type: 'magnet_action', vals: { action: 'BOOST' } },
-      { type: 'wait_sec', vals: { sec: '1' } },
-      { type: 'drive_for', vals: { dir: 'REVERSE', dist: '700' } },
-      { type: 'magnet_action', vals: { action: 'DROP' } }
-    ],
-    python: `drivetrain.drive_for(FORWARD, 700, MM)\nmagnet.energize(BOOST)\nwait(1, SECONDS)\ndrivetrain.drive_for(REVERSE, 700, MM)\nmagnet.energize(DROP)\n`
-  },
-  maze_navigation: {
-    playground: 'maze',
-    blocks: [
-      { type: 'repeat_times', vals: { times: '4' } },
-      { type: 'drive_until_obstacle', vals: { dist: '200' } },
-      { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } }
-    ],
-    python: `for step in range(6):\n    if distance.get_distance(MM) > 220:\n        drivetrain.drive_for(FORWARD, 200, MM)\n    else:\n        drivetrain.turn_for(RIGHT, 90, DEGREES)\n`
-  }
+const BLOCK_PRESETS = {
+  square: [
+    { type: 'pen_color', vals: { color: '#ef4444' } },
+    { type: 'pen_move', vals: { action: 'DOWN' } },
+    { 
+      type: 'repeat_times', 
+      vals: { times: '4' },
+      children: [
+        { type: 'drive_for', vals: { dir: 'FORWARD', dist: '250' } },
+        { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } }
+      ]
+    },
+    { type: 'pen_move', vals: { action: 'UP' } },
+    { type: 'print_msg', vals: { msg: 'تم رسم المربع بنجاح!' } }
+  ],
+  circle_art: [
+    { type: 'pen_color', vals: { color: '#3b82f6' } },
+    { type: 'pen_move', vals: { action: 'DOWN' } },
+    { 
+      type: 'repeat_times', 
+      vals: { times: '8' },
+      children: [
+        { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } },
+        { type: 'turn_for', vals: { dir: 'RIGHT', angle: '135' } }
+      ]
+    },
+    { type: 'pen_move', vals: { action: 'UP' } }
+  ],
+  drive_stop: [
+    { type: 'drive_until_obstacle', vals: { dist: '180' } },
+    { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
+    { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
+  ],
+  magnet_disk: [
+    { type: 'drive_for', vals: { dir: 'FORWARD', dist: '700' } },
+    { type: 'magnet_action', vals: { action: 'BOOST' } },
+    { type: 'wait_sec', vals: { sec: '1' } },
+    { type: 'drive_for', vals: { dir: 'REVERSE', dist: '700' } },
+    { type: 'magnet_action', vals: { action: 'DROP' } }
+  ],
+  avoid_wall: [
+    { type: 'drive_until_bumper' },
+    { type: 'drive_for', vals: { dir: 'REVERSE', dist: '150' } },
+    { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
+    { type: 'drive_for', vals: { dir: 'FORWARD', dist: '200' } }
+  ],
+  drive_to_y: [
+    { type: 'set_speed', vals: { speed: '100' } },
+    { type: 'drive_start' },
+    {
+      type: 'wait_until',
+      condition: {
+        type: 'compare',
+        vals: {
+          'left-source': 'value',
+          left: '-1',
+          operator: 'lt',
+          'right-source': 'y',
+          right: '0'
+        }
+      }
+    },
+    { type: 'drive_stop' }
+  ],
+  eye_object: [
+    { type: 'drive_start' },
+    {
+      type: 'wait_until',
+      condition: { type: 'eye_near', vals: { sensor: 'front' } }
+    },
+    { type: 'drive_stop' }
+  ],
+  eye_color: [
+    { type: 'drive_start' },
+    {
+      type: 'wait_until',
+      condition: { type: 'eye_color', vals: { sensor: 'front', color: 'red' } }
+    },
+    { type: 'drive_stop' }
+  ],
+  bumper_if: [
+    { type: 'drive_until_bumper' },
+    {
+      type: 'if_else',
+      condition: { type: 'bumper_pressed', vals: { side: 'left' } },
+      children: [{ type: 'drive_for', vals: { dir: 'REVERSE', dist: '150' } }],
+      elseChildren: [{ type: 'turn_for', vals: { dir: 'LEFT', angle: '90' } }]
+    }
+  ],
+  another_square: [
+    { type: 'set_speed', vals: { speed: '30' } },
+    { type: 'set_turn_speed', vals: { speed: '30' } },
+    { type: 'drive_start' },
+    {
+      type: 'repeat_times',
+      vals: { times: '4' },
+      children: [
+        {
+          type: 'if_then',
+          condition: {
+            type: 'compare',
+            vals: {
+              'left-source': 'heading',
+              left: '0',
+              operator: 'eq',
+              'right-source': 'value',
+              right: '0'
+            }
+          },
+          children: [
+            { type: 'drive_for', vals: { dir: 'FORWARD', dist: '400' } },
+            { type: 'turn_for', vals: { dir: 'RIGHT', angle: '90' } },
+            { type: 'set_heading', vals: { heading: '0' } }
+          ]
+        }
+      ]
+    },
+    { type: 'wait_sec', vals: { sec: '1' } }
+  ],
+  counter_octagon: [
+    { type: 'set_variable', vals: { name: 'Counter', value: '0' } },
+    { type: 'set_variable', vals: { name: 'Travel_distance', value: '300' } },
+    { type: 'set_variable', vals: { name: 'Turn', value: '45' } },
+    { type: 'pen_move', vals: { action: 'DOWN' } },
+    {
+      type: 'repeat_until',
+      condition: {
+        type: 'compare',
+        vals: {
+          'left-source': 'variable',
+          'left-variable': 'Counter',
+          left: '0',
+          operator: 'eq',
+          'right-source': 'value',
+          right: '8'
+        }
+      },
+      children: [
+        {
+          type: 'if_else',
+          condition: {
+            type: 'compare',
+            vals: {
+              'left-source': 'value',
+              left: '@math:{"type":"math_remainder","left":"Counter","right":"2"}',
+              operator: 'eq',
+              'right-source': 'value',
+              right: '0'
+            }
+          },
+          children: [{ type: 'pen_color', vals: { color: '#0f172a' } }],
+          elseChildren: [{ type: 'pen_color', vals: { color: '#ef4444' } }]
+        },
+        { type: 'drive_for', vals: { dir: 'FORWARD', dist: 'Travel_distance' } },
+        { type: 'turn_for', vals: { dir: 'RIGHT', angle: 'Turn' } },
+        { type: 'change_variable', vals: { name: 'Counter', value: '1' } }
+      ]
+    },
+    { type: 'pen_move', vals: { action: 'UP' } }
+  ]
 };
 
-function loadPresetExample(key) {
-  if (!key || !UNIFIED_PRESETS[key]) return;
+function createPresetBlock(item) {
+  const block = createPlacedBlockElement(item.type, item.vals);
+  if (!block) return null;
+
+  const conditionItems = item.conditions || (item.condition ? [item.condition] : []);
+  const conditionSlots = block.querySelectorAll('.condition-slot');
+  conditionItems.forEach((conditionItem, index) => {
+    if (!conditionItem) return;
+    const condition = createPresetBlock(conditionItem);
+    const slot = conditionSlots[index];
+    if (condition && slot) slot.appendChild(condition);
+  });
+  if (item.children?.length) {
+    const body = block.querySelector('.c-block-body');
+    if (body) {
+      for (const childItem of item.children) {
+        const child = createPresetBlock(childItem);
+        if (child) body.appendChild(child);
+      }
+    }
+  }
+  if (item.elseChildren?.length) {
+    const body = block.querySelector('.c-block-else-body');
+    if (body) {
+      for (const childItem of item.elseChildren) {
+        const child = createPresetBlock(childItem);
+        if (child) body.appendChild(child);
+      }
+    }
+  }
+  return block;
+}
+
+function loadBlocksPreset(key) {
+  if (!key || !BLOCK_PRESETS[key]) return;
   stopExecution();
 
-  const preset = UNIFIED_PRESETS[key];
-  if (preset.playground) {
-    document.getElementById('playgroundSelect').value = preset.playground;
-    initPlayground(preset.playground);
+  if (['magnet_disk', 'drive_to_y', 'eye_color'].includes(key)) {
+    const playground = key === 'magnet_disk' || key === 'eye_color' ? 'disk' : 'grid';
+    document.getElementById('playgroundSelect').value = playground;
+    initPlayground(playground);
+    if (key === 'drive_to_y') {
+      STATE.robot.y = -800;
+      updateSensorsHUD();
+      render();
+    } else if (key === 'eye_color') {
+      STATE.robot.y = -550;
+      updateSensorsHUD();
+      render();
+    }
   } else {
-    if (STATE.playgroundType !== 'grid' && STATE.playgroundType !== 'art') {
+    if (!['grid', 'grid_corner', 'art'].includes(STATE.playgroundType)) {
       document.getElementById('playgroundSelect').value = 'grid';
       initPlayground('grid');
     }
   }
 
-  // Load into blocks
-  const existing = workspaceDropzone.querySelectorAll('.placed-block');
-  existing.forEach(b => b.remove());
-  for (const item of preset.blocks) {
-    const el = createPlacedBlockElement(item.type, item.vals);
-    if (el) workspaceDropzone.appendChild(el);
+  if (key === 'another_square' || key === 'counter_octagon') {
+    if (key === 'counter_octagon') {
+      document.getElementById('playgroundSelect').value = 'grid_corner';
+      initPlayground('grid_corner');
+    } else {
+      document.getElementById('playgroundSelect').value = 'grid';
+      initPlayground('grid');
+      STATE.robot.angle = 0;
+    }
+    STATE.robot.headingOffset = 0;
+    updateSensorsHUD();
+    render();
   }
+
+  if (key === 'eye_object' || key === 'bumper_if') {
+    STATE.robot.y = key === 'eye_object' ? 700 : 840;
+    STATE.robot.angle = 90;
+    updateSensorsHUD();
+    render();
+  }
+
+  // Clear existing placed blocks
+  const existing = [...workspaceDropzone.children].filter(el => 
+    el.classList && el.classList.contains('placed-block')
+  );
+  existing.forEach(b => b.remove());
+
+  // Populate from preset
+  const preset = BLOCK_PRESETS[key];
+  for (const item of preset) {
+    const block = createPresetBlock(item);
+    if (block) workspaceDropzone.appendChild(block);
+  }
+
   updateBlockCount();
-
-  // Load into python
-  codeEditor.value = preset.python;
-  updateCodeLineNumbers();
-
-  appendConsole(`تم تحميل المثال: ${key}`, 'info');
+  appendConsole(`تم تحميل النموذج البرمجي: ${key}`, 'info');
 }
 
-// Startup
+// Initialization on DOM Load
 window.addEventListener('DOMContentLoaded', () => {
   initPlayground('grid');
-  loadPresetExample('square');
+  loadBlocksPreset('square');
 });
 </script>
 </body>
