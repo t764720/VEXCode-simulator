@@ -2883,7 +2883,23 @@ function render() {
 
   ctx.fillStyle = '#1e293b';
   ctx.beginPath();
-  ctx.roundRect(-rWidth / 2, -rLength / 2, rWidth, rLength, 6);
+  const robotLeft = -rWidth / 2;
+  const robotTop = -rLength / 2;
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(robotLeft, robotTop, rWidth, rLength, 6);
+  } else {
+    const radius = 6;
+    ctx.moveTo(robotLeft + radius, robotTop);
+    ctx.lineTo(robotLeft + rWidth - radius, robotTop);
+    ctx.quadraticCurveTo(robotLeft + rWidth, robotTop, robotLeft + rWidth, robotTop + radius);
+    ctx.lineTo(robotLeft + rWidth, robotTop + rLength - radius);
+    ctx.quadraticCurveTo(robotLeft + rWidth, robotTop + rLength, robotLeft + rWidth - radius, robotTop + rLength);
+    ctx.lineTo(robotLeft + radius, robotTop + rLength);
+    ctx.quadraticCurveTo(robotLeft, robotTop + rLength, robotLeft, robotTop + rLength - radius);
+    ctx.lineTo(robotLeft, robotTop + radius);
+    ctx.quadraticCurveTo(robotLeft, robotTop, robotLeft + radius, robotTop);
+    ctx.closePath();
+  }
   ctx.fill();
 
   ctx.fillStyle = '#dc2626';
