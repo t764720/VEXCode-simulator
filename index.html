@@ -439,13 +439,49 @@ select:hover { border-color: #94a3b8; }
 }
 .code-viewer {
   display: flex;
-  flex: 0 0 48%;
+  flex: 0 0 var(--code-viewer-width, 48%);
   flex-direction: column;
-  min-width: 0;
+  min-width: 160px;
+  max-width: calc(100% - 160px);
   overflow: hidden;
   border-left: 1px solid var(--line-color);
   background: #f8fafc;
   direction: ltr;
+}
+.console-splitter {
+  width: 7px;
+  flex: 0 0 7px;
+  cursor: col-resize;
+  background: #f1f5f9;
+  border-left: 1px solid var(--line-color);
+  border-right: 1px solid var(--line-color);
+  position: relative;
+  user-select: none;
+  transition: background 0.15s ease;
+  z-index: 2;
+}
+.console-splitter::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 1px;
+}
+.console-splitter:hover,
+.console-splitter.is-resizing {
+  background: var(--primary);
+}
+.console-splitter:hover::after,
+.console-splitter.is-resizing::after {
+  background: #fff;
+}
+.console-drawer.is-resizing-splitter {
+  cursor: col-resize;
+  user-select: none;
 }
 .code-viewer[hidden] {
   display: none;
@@ -1405,8 +1441,8 @@ select {
           class="console-toggle"
           id="consoleToggle"
           aria-controls="consoleOutput"
-          aria-expanded="true"
-        >إخفاء منطقة الطباعة</button>
+          aria-expanded="false"
+        >إظهار منطقة الطباعة</button>
       </div>
     </div>
 
@@ -1435,8 +1471,16 @@ select {
     </div>
 
     <!-- Live execution log -->
-    <div class="console-drawer" id="consoleOutput">
+    <div class="console-drawer" id="consoleOutput" hidden>
       <div class="console-log" id="consoleLog" role="log" aria-live="polite"></div>
+      <div
+        class="console-splitter"
+        id="consoleSplitter"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="تغيير العرض بين منطقة الطباعة وعارض الكود"
+        title="اسحب لتغيير العرض بين منطقة الطباعة وعارض الكود"
+      ></div>
       <aside class="code-viewer" id="codeViewer" aria-label="عارض الكود بلغة Python">
         <div class="code-viewer-header">معاينة الكود (Python)</div>
         <pre class="code-viewer-content" id="generatedCode" aria-live="polite"></pre>
@@ -1540,6 +1584,7 @@ const workspaceScrollbar = document.getElementById('workspaceScrollbar');
 const workspaceScrollThumb = document.getElementById('workspaceScrollThumb');
 const consoleOutput = document.getElementById('consoleOutput');
 const consoleLog = document.getElementById('consoleLog');
+const consoleSplitter = document.getElementById('consoleSplitter');
 const consoleToggle = document.getElementById('consoleToggle');
 const codeViewer = document.getElementById('codeViewer');
 const codeViewerToggle = document.getElementById('codeViewerToggle');
@@ -1641,6 +1686,9 @@ consoleToggle.addEventListener('click', () => {
   consoleOutput.hidden = isVisible;
   consoleToggle.setAttribute('aria-expanded', String(!isVisible));
   consoleToggle.textContent = isVisible ? 'إظهار منطقة الطباعة' : 'إخفاء منطقة الطباعة';
+  if (!isVisible && !codeViewer.hidden) {
+    updateCodeViewer();
+  }
 });
 
 codeViewerToggle.addEventListener('click', () => {
@@ -1648,8 +1696,47 @@ codeViewerToggle.addEventListener('click', () => {
   codeViewer.hidden = isVisible;
   codeViewerToggle.setAttribute('aria-expanded', String(!isVisible));
   codeViewerToggle.textContent = isVisible ? 'إظهار عارض الكود' : 'إخفاء عارض الكود';
+  if (consoleSplitter) {
+    consoleSplitter.style.display = isVisible ? 'none' : '';
+  }
   if (!isVisible) updateCodeViewer();
 });
+
+// Console Splitter: توسيع منطقة الطباعة وعارض الكود يميناً ويساراً
+if (consoleSplitter) {
+  let isDraggingSplitter = false;
+
+  consoleSplitter.addEventListener('mousedown', (e) => {
+    if (codeViewer.hidden) return;
+    isDraggingSplitter = true;
+    consoleSplitter.classList.add('is-resizing');
+    consoleOutput.classList.add('is-resizing-splitter');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingSplitter) return;
+    const rect = consoleOutput.getBoundingClientRect();
+    // In LTR direction inside consoleOutput:
+    // Left side is consoleLog, right side is codeViewer
+    const offsetFromRight = rect.right - e.clientX;
+    const minWidth = 140;
+    const maxWidth = rect.width - 140;
+    const clamped = Math.max(minWidth, Math.min(maxWidth, offsetFromRight));
+    codeViewer.style.setProperty('--code-viewer-width', `${clamped}px`);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDraggingSplitter) return;
+    isDraggingSplitter = false;
+    consoleSplitter.classList.remove('is-resizing');
+    consoleOutput.classList.remove('is-resizing-splitter');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+}
 
 function resizeToolbox(clientX, clientY) {
   const isStacked = window.matchMedia('(max-width: 1050px)').matches;
