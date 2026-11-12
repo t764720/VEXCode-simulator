@@ -125,6 +125,25 @@ select {
   width: 80px;
   cursor: pointer;
 }
+.developer-credit {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  user-select: none;
+}
+.developer-credit a {
+  color: #0284c7;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.developer-credit a:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
 
 /* Layout */
 .workspace-container {
@@ -970,6 +989,11 @@ select {
     <span>السرعة:</span>
     <input type="range" id="simSpeed" min="1" max="10" value="5">
     <span id="speedVal">5x</span>
+  </div>
+
+  <div class="developer-credit">
+    <span>تطوير:</span>
+    <a href="mailto:w.a.a2012@gmail.com" title="مراسلة المطور عبر البريد الإلكتروني">عبدالرزاق المعلوي</a>
   </div>
 </div>
 
